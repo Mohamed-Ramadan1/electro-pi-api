@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { RouterModule } from '@nestjs/core';
-import { AuthModule } from '../modules/auth/auth.module';
-import { UsersModule } from '../modules/users/users.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { RouterModule, APP_FILTER, APP_GUARD } from '@nestjs/core';
+
+// modules imports
+import { AuthModule } from '@modules/auth/auth.module';
+import { UsersModule } from '@modules/users/users.module';
+
+// common imports
+import { AllExceptionsFilter, AuthGuard } from '@common/index';
+
 @Module({
   imports: [
     RouterModule.register([
@@ -36,6 +42,20 @@ import { UsersModule } from '../modules/users/users.module';
       envFilePath: '.env',
       isGlobal: true,
     }),
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
 })
 export class CoreModule {}
