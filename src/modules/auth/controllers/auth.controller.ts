@@ -94,17 +94,4 @@ export class AuthController {
       maxAge,
     };
   }
-  private setRequestCookies(
-    res: Response,
-    token: string,
-    ttl: number,
-    cookieName: string,
-  ): void {
-    res.cookie(cookieName, token, {
-      httpOnly: true,
-      secure: this.nodeEnv === 'production',
-      sameSite: 'lax',
-      maxAge: ttl,
-    });
-  }
 }
