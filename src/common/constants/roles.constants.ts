@@ -1,9 +1,8 @@
-export const UserRole = {
-  USER: 'user',
+export const UserRoles = {
+  MEMBER: 'member',
   ADMIN: 'admin',
-  SUPER_ADMIN: 'super_admin',
 } as const;
 
-export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+export type UserRole = (typeof UserRoles)[keyof typeof UserRoles];
 
-export const DEFAULT_ROLE = UserRole.USER;
+export const DEFAULT_ROLE = UserRoles.MEMBER;

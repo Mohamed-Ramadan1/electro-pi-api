@@ -7,7 +7,6 @@ import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [CoreModule, InfrastructureModule, ModulesModule, CommonModule],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}

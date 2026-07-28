@@ -6,6 +6,12 @@ import { ProjectsModule } from './projects/projects.module';
 import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, TeamsModule, ProjectsModule, NotificationsModule]
+  imports: [
+    AuthModule,
+    UsersModule,
+    TeamsModule,
+    ProjectsModule,
+    NotificationsModule,
+  ],
 })
 export class ModulesModule {}
