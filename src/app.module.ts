@@ -6,7 +6,7 @@ import { ModulesModule } from './modules/modules.module';
 import { CoreModule } from './core/core.module';
 
 @Module({
-  imports: [InfrastructureModule, ModulesModule, CommonModule, CoreModule],
+  imports: [CoreModule, InfrastructureModule, ModulesModule, CommonModule],
   controllers: [],
   providers: [],
 })
