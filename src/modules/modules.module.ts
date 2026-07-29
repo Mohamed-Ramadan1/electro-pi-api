@@ -10,9 +10,9 @@ import { TasksModule } from './tasks/tasks.module';
   imports: [
     AuthModule,
     UsersModule,
-    ProjectsModule,
-    NotificationsModule,
     TasksModule,
+    NotificationsModule,
+    ProjectsModule,
   ],
 })
 export class ModulesModule {}
