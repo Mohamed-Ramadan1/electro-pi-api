@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseService } from './services/database.service';
@@ -9,19 +8,26 @@ import { DatabaseService } from './services/database.service';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST'),
-        port: configService.get<number>('DATABASE_PORT'),
-        username: configService.get<string>('DATABASE_USER'),
-        password: configService.get<string>('DATABASE_PASSWORD'),
-        database: configService.get<string>('DATABASE_NAME'),
-        entities: [],
-        synchronize: configService.get<string>('NODE_ENV') === 'development',
-        autoLoadEntities: true,
-        logging: configService.get<string>('NODE_ENV') === 'development',
-        maxQueryExecutionTime: 1000,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isDev = configService.get<string>('NODE_ENV') !== 'production';
+
+        return {
+          type: 'postgres',
+          host: configService.get<string>('DATABASE_HOST'),
+          port: configService.get<number>('DATABASE_PORT'),
+          username: configService.get<string>('DATABASE_USER'),
+          password: configService.get<string>('DATABASE_PASSWORD'),
+          database: configService.get<string>('DATABASE_NAME'),
+          entities: [__dirname + '/../../modules/**/entity/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/../../migrations/*{.ts,.js}'],
+          migrationsTableName: 'typeorm_migrations',
+          synchronize: false,
+          autoLoadEntities: true,
+          migrationsRun: false,
+          logging: isDev,
+          maxQueryExecutionTime: 1000,
+        };
+      },
     }),
   ],
   providers: [DatabaseService],
