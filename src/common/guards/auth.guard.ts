@@ -49,7 +49,7 @@ export class AuthGuard implements CanActivate {
 
       // attach user to request so downstream handlers/decorators can access it
       req['user'] = user;
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
