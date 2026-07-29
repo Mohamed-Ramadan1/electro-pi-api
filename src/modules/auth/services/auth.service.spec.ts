@@ -4,12 +4,8 @@ import { createMock } from '../../../../test/helpers/mock-factory';
 import { PasswordService } from '@infrastructure/password/services/password.service';
 import { TokenService } from '@infrastructure/jwt/services/token.service';
 import { UserService } from '@modules/users/services/user.service';
-import { User } from '@modules/users/entity/user.entity';
 import { buildUser } from '../../../../test/factories/user.factory';
-import {
-  ConflictException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
