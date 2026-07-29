@@ -21,6 +21,7 @@ export class UserRepository {
         id: true,
         email: true,
         name: true,
+        roles: true,
         passwordHash: true,
       },
     });
@@ -34,6 +35,12 @@ export class UserRepository {
     });
     return this.repo.findOneByOrFail({
       id: result.identifiers[0].id,
+    });
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return await this.repo.findOneByOrFail({
+      id: id,
     });
   }
 }

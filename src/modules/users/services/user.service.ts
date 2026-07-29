@@ -9,11 +9,15 @@ export class UserService {
     return this.userRepo.isExist(email);
   }
 
-  async create(userInfo: Partial<User>): Promise<User> {
+  create(userInfo: Partial<User>): Promise<User> {
     return this.userRepo.create(userInfo);
   }
 
-  async findByEmailWithPassword(email: string): Promise<User | null> {
+  findByEmailWithPassword(email: string): Promise<User | null> {
     return this.userRepo.findByEmailWithPassword(email);
+  }
+
+  findById(id: string): Promise<User | null> {
+    return this.userRepo.findById(id);
   }
 }

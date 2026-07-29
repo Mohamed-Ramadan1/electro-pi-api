@@ -31,7 +31,15 @@ export class AuthService {
         passwordHash,
       });
 
-      return await this.issueTokens(createdUser.id, createdUser.roles);
+      const { accessToken, refreshToken } = await this.issueTokens(
+        createdUser.id,
+        createdUser.roles,
+      );
+      return {
+        accessToken,
+        refreshToken,
+        createdUser,
+      };
     } catch (err: any) {
       if (err.code === '23505') {
         throw new ConflictException('User with this email already exists.');
@@ -56,7 +64,16 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password.');
     }
 
-    return await this.issueTokens(user.id, user.roles);
+    const { accessToken, refreshToken } = await this.issueTokens(
+      user.id,
+      user.roles,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
   }
 
   // Helper reusable methods.

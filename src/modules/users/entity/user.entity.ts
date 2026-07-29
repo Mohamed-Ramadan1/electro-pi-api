@@ -38,6 +38,13 @@ export class User {
   })
   roles!: UserRole[];
 
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: null,
+  })
+  profileImage!: string | null;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt!: Date;
 

@@ -1,17 +1,27 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-
-import { Observable } from 'rxjs';
+import { Request } from 'express';
+import { TokenService } from '@infrastructure/index';
 
 import { IS_PROTECTED_KEY } from '../decorators/protected.decorator';
+import { UserService } from '@modules/users/services/user.service';
+import { forwardRef, Inject } from '@nestjs/common';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private readonly tokenService: TokenService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
+  ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const protectedRequest = this.isProtected(context);
 
     /*
@@ -21,10 +31,27 @@ export class AuthGuard implements CanActivate {
      */
     if (!protectedRequest) return true;
 
-    // const user: AuthenticatedUser = context.switchToHttp().getRequest<Request>()
-    //   .user as AuthenticatedUser;
+    const req: Request = context.switchToHttp().getRequest<Request>();
 
-    // console.log('user from auth guard', user);
+    const token = this.extractTokenFromHeader(req);
+    if (!token) {
+      throw new UnauthorizedException('No token provided');
+    }
+
+    try {
+      const payload = await this.tokenService.verifyAccessToken(token);
+
+      const user = await this.userService.findById(payload.sub);
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      // attach user to request so downstream handlers/decorators can access it
+      req['user'] = user;
+    } catch (err) {
+      throw new UnauthorizedException('Invalid or expired token');
+    }
 
     return true;
   }
@@ -34,5 +61,10 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+  }
+
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }

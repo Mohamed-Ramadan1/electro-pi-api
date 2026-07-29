@@ -8,7 +8,7 @@
  */
 export interface AuthenticatedUser {
   /** The user's unique identifier (from JWT `sub` claim) */
-  userId: string;
+  id: string;
 
   /** Roles assigned to the user (from JWT `roles` claim) */
   roles: string[];

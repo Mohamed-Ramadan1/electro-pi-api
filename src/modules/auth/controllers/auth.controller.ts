@@ -46,11 +46,17 @@ export class AuthController {
     @Body()
     registerDto: RegisterDto,
   ) {
-    const { accessToken, refreshToken } =
+    const { accessToken, refreshToken, createdUser } =
       await this.authService.register(registerDto);
     this.setAuthCookies(res, accessToken, refreshToken);
     return {
       message: 'User registered successfully',
+
+      user: {
+        email: createdUser.email,
+        name: createdUser.name,
+        roles: createdUser.roles,
+      },
     };
   }
 
@@ -61,11 +67,16 @@ export class AuthController {
     @Body()
     loginDto: LoginDto,
   ) {
-    const { accessToken, refreshToken } =
+    const { accessToken, refreshToken, user } =
       await this.authService.login(loginDto);
     this.setAuthCookies(res, accessToken, refreshToken);
     return {
       message: 'User login success.',
+      user: {
+        email: user.email,
+        name: user.name,
+        roles: user.roles,
+      },
     };
   }
 

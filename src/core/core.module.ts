@@ -8,14 +8,14 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 
 // common imports
-import { AllExceptionsFilter, AuthGuard } from '@common/index';
+import { AllExceptionsFilter } from '@common/index';
 
 @Module({
   imports: [
     RouterModule.register([
       { path: 'auth', module: AuthModule },
       {
-        path: 'user',
+        path: 'users',
         module: UsersModule,
       },
     ]),
@@ -42,6 +42,7 @@ import { AllExceptionsFilter, AuthGuard } from '@common/index';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    UsersModule,
   ],
   providers: [
     {
@@ -51,10 +52,6 @@ import { AllExceptionsFilter, AuthGuard } from '@common/index';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
     },
   ],
 })
