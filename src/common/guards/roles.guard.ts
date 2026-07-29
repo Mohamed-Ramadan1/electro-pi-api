@@ -17,15 +17,6 @@ export class RolesGuard implements CanActivate {
     const handler = context.getHandler();
     const cls = context.getClass();
 
-    console.log('--- RolesGuard Debug ---');
-    console.log('handler metadata keys:', Reflect.getMetadataKeys(handler));
-    console.log('class metadata keys:', Reflect.getMetadataKeys(cls));
-    console.log(
-      'handler roles metadata:',
-      Reflect.getMetadata(ROLES_KEY, handler),
-    );
-    console.log('class roles metadata:', Reflect.getMetadata(ROLES_KEY, cls));
-
     const requiredRoles = this.reflector.getAllAndMerge<UserRole[]>(ROLES_KEY, [
       handler,
       cls,
@@ -37,7 +28,6 @@ export class RolesGuard implements CanActivate {
     const user = context.switchToHttp().getRequest().user as
       AuthenticatedUser | undefined;
 
-    console.log('user in RolesGuard:', user);
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }

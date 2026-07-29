@@ -57,6 +57,9 @@ export class AuthController {
         name: createdUser.name,
         roles: createdUser.roles,
       },
+      tokens: {
+        accessToken: accessToken,
+      },
     };
   }
 
@@ -76,6 +79,9 @@ export class AuthController {
         email: user.email,
         name: user.name,
         roles: user.roles,
+      },
+      tokens: {
+        accessToken: accessToken,
       },
     };
   }
@@ -103,6 +109,7 @@ export class AuthController {
       secure: this.nodeEnv === 'production',
       sameSite: 'lax' as const,
       maxAge,
+      path: '/',
     };
   }
 }
