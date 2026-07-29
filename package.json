@@ -16,6 +16,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "migration:run:test": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/infrastructure/database/data-source-test.ts",
+    "test:int": "jest --config ./test/jest-int.json --runInBand",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/infrastructure/database/data-source.ts",
