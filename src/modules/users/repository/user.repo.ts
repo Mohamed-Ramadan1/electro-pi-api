@@ -39,8 +39,36 @@ export class UserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    return await this.repo.findOneByOrFail({
-      id: id,
+    return this.repo.findOneBy({ id });
+  }
+
+  findUsers(): Promise<User[]> {
+    return this.repo.find();
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await this.repo.delete({ id });
+  }
+
+  async createWithRoles(
+    user: Pick<User, 'name' | 'email' | 'passwordHash' | 'roles'>,
+  ): Promise<User> {
+    const result = await this.repo.insert({
+      email: user.email,
+      name: user.name,
+      passwordHash: user.passwordHash,
+      roles: user.roles,
     });
+    return this.repo.findOneByOrFail({
+      id: result.identifiers[0].id,
+    });
+  }
+
+  async activate(id: string): Promise<void> {
+    await this.repo.update({ id }, { isActive: true });
+  }
+
+  async deactivate(id: string): Promise<void> {
+    await this.repo.update({ id }, { isActive: false });
   }
 }

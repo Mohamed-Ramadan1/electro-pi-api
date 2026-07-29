@@ -24,11 +24,6 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const protectedRequest = this.isProtected(context);
 
-    /*
-     * check if its have the protected metadata or not
-     * if not then return true to allow the request to pass through with not the user validation step
-     * if it has the protected metadata then the if statement will be false and the request will be passed to the next step which is the user validation step.
-     */
     if (!protectedRequest) return true;
 
     const req: Request = context.switchToHttp().getRequest<Request>();
@@ -49,7 +44,7 @@ export class AuthGuard implements CanActivate {
 
       // attach user to request so downstream handlers/decorators can access it
       req['user'] = user;
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException('Invalid or expired token');
     }
 

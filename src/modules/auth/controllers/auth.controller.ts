@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   Res,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../services/auth.service';
@@ -15,6 +16,7 @@ import { Public, TransformResponseInterceptor } from '@common/index';
 import { Response } from 'express';
 import ms from 'ms';
 
+@ApiTags('Auth')
 @Controller()
 @Public()
 @UseInterceptors(TransformResponseInterceptor)
@@ -39,6 +41,18 @@ export class AuthController {
     this.refreshTokenTtl = ms(refreshTtl as ms.StringValue);
   }
 
+  @ApiOperation({
+    summary: 'Register a new user account',
+    description:
+      'Creates a new user with the default `member` role, hashes the password, issues an access + refresh token pair, and sets both tokens as httpOnly cookies.',
+  })
+  @ApiBody({ type: RegisterDto, description: 'Registration payload' })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully. Tokens set in cookies.',
+  })
+  @ApiResponse({ status: 409, description: 'Email already registered.' })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(
@@ -63,6 +77,18 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Log in with email and password',
+    description:
+      'Validates credentials, issues an access + refresh token pair, and sets both tokens as httpOnly cookies.',
+  })
+  @ApiBody({ type: LoginDto, description: 'Login payload' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful. Tokens set in cookies.',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid email or password.' })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
