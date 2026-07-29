@@ -17,6 +17,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "types": ["node", "jest"],
     "paths": {
       "@common/*": ["./src/common/*"],
       "@modules/*": ["./src/modules/*"],
