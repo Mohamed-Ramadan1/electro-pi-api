@@ -8,10 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import {
-  tasksStatus,
-  tasksPriority,
-} from '../constants/taskst.const';
+import { tasksStatus, tasksPriority } from '../constants/taskst.const';
 
 export class UpdateTaskDto {
   @ApiPropertyOptional({
@@ -57,7 +54,7 @@ export class UpdateTaskDto {
     example: '2026-08-15T18:00:00.000Z',
   })
   @IsOptional()
-  @IsDateString({ strict: false } as any)
+  @IsDateString({ strict: false })
   dueDate?: string;
 
   @ApiPropertyOptional({

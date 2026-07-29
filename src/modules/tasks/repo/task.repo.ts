@@ -48,10 +48,7 @@ export class TaskRepository {
 
   findByUser(userId: string): Promise<Task[]> {
     return this.repo.find({
-      where: [
-        { creator: { id: userId } },
-        { assignee: { id: userId } },
-      ],
+      where: [{ creator: { id: userId } }, { assignee: { id: userId } }],
       relations: {
         creator: true,
         assignee: true,

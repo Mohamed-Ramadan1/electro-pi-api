@@ -126,9 +126,7 @@ export class TasksService {
       dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
       project: { id: dto.projectId } as Project,
       creator: { id: creatorId } as User,
-      assignee: dto.assigneeId
-        ? ({ id: dto.assigneeId } as User)
-        : null,
+      assignee: dto.assigneeId ? ({ id: dto.assigneeId } as User) : null,
       images: images as TaskImage[],
     });
   }
@@ -250,9 +248,7 @@ export class TasksService {
       task.dueDate = dto.dueDate ? new Date(dto.dueDate) : null;
     }
     if (dto.assigneeId !== undefined) {
-      task.assignee = dto.assigneeId
-        ? ({ id: dto.assigneeId } as User)
-        : null;
+      task.assignee = dto.assigneeId ? ({ id: dto.assigneeId } as User) : null;
     }
 
     if (files?.length) {
@@ -275,11 +271,7 @@ export class TasksService {
     return this.taskRepo.findById(id);
   }
 
-  async updateTaskStatus(
-    id: string,
-    userId: string,
-    dto: UpdateTaskStatusDto,
-  ) {
+  async updateTaskStatus(id: string, userId: string, dto: UpdateTaskStatusDto) {
     const task = await this.taskRepo.findById(id);
     if (!task) {
       throw new NotFoundException('Task not found');

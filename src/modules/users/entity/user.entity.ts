@@ -6,7 +6,11 @@ import {
   Index,
 } from 'typeorm';
 
-import { UserRoles, UserRole, DEFAULT_ROLE } from '@common/constants/roles.constants';
+import {
+  UserRoles,
+  UserRole,
+  DEFAULT_ROLE,
+} from '@common/constants/roles.constants';
 
 @Entity('users')
 export class User {

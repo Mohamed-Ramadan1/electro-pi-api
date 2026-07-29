@@ -6,7 +6,9 @@ let counter = 0;
 export function buildUser(overrides?: Partial<User>): User {
   counter++;
   const user = new User();
-  user.id = overrides?.id ?? `00000000-0000-0000-0000-${String(counter).padStart(12, '0')}`;
+  user.id =
+    overrides?.id ??
+    `00000000-0000-0000-0000-${String(counter).padStart(12, '0')}`;
   user.name = overrides?.name ?? `Test User ${counter}`;
   user.email = overrides?.email ?? `user-${counter}@test.com`;
   user.passwordHash = overrides?.passwordHash ?? '$2b$10$hashedpassword';

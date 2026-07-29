@@ -14,10 +14,7 @@ import { TaskRepository } from './repo/task.repo';
 import { UploadModule } from '@infrastructure/upload/upload.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Task, TaskImage, Project]),
-    UploadModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Task, TaskImage, Project]), UploadModule],
   controllers: [TasksController, TasksMembersController],
   providers: [TasksService, TaskRepository],
 })

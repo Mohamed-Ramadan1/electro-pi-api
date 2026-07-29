@@ -160,7 +160,10 @@ describe('TokenService', () => {
         providers: [
           TokenService,
           { provide: JwtService, useValue: mockJwtService },
-          { provide: JWT_CONFIG, useValue: { ...mockJwtConfig, accessTtl: 3600 } },
+          {
+            provide: JWT_CONFIG,
+            useValue: { ...mockJwtConfig, accessTtl: 3600 },
+          },
         ],
       }).compile();
 

@@ -24,10 +24,7 @@ export class ProjectRepository {
 
   findByUser(userId: string): Promise<Project[]> {
     return this.repo.find({
-      where: [
-        { creator: { id: userId } },
-        { members: { id: userId } },
-      ],
+      where: [{ creator: { id: userId } }, { members: { id: userId } }],
       relations: { creator: true, members: true },
     });
   }

@@ -1,9 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsArray,
   IsDateString,
   IsEnum,
-  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -11,10 +9,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import {
-  tasksStatus,
-  tasksPriority,
-} from '../constants/taskst.const';
+import { tasksPriority } from '../constants/taskst.const';
 
 export class CreateTaskDto {
   @ApiProperty({
@@ -68,6 +63,6 @@ export class CreateTaskDto {
     example: '2026-08-15T18:00:00.000Z',
   })
   @IsOptional()
-  @IsDateString({ strict: false } as any)
+  @IsDateString({ strict: false })
   dueDate?: string;
 }

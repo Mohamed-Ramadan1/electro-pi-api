@@ -7,17 +7,14 @@ describe('UserRepository (integration)', () => {
   let repo: UserRepository;
 
   beforeAll(async () => {
-    const { setupTestDatabase } = await import(
-      '../../helpers/test-database'
-    );
+    const { setupTestDatabase } = await import('../../helpers/test-database');
     dataSource = await setupTestDatabase();
-    repo = new UserRepository(dataSource.getRepository(User) as any);
+    repo = new UserRepository(dataSource.getRepository(User));
   });
 
   afterAll(async () => {
-    const { teardownTestDatabase } = await import(
-      '../../helpers/test-database'
-    );
+    const { teardownTestDatabase } =
+      await import('../../helpers/test-database');
     await teardownTestDatabase();
   });
 
