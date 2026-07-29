@@ -33,7 +33,7 @@ import { AllExceptionsFilter } from '@common/index';
       {
         name: 'auth',
         ttl: 900000, // 15 minutes
-        limit: 5, // For login/signup
+        limit: 35, // For login/signup
       },
     ]),
 
