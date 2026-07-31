@@ -4,7 +4,9 @@ import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -78,9 +80,24 @@ export class UploaderService implements OnModuleInit {
 
       this.logger.log(`Uploaded to S3: ${url}`);
       return { key, url };
-    } catch (s3Err) {
-      this.logger.warn(
-        `S3 upload failed, falling back to local disk: ${(s3Err as Error).message}`,
+    } catch (s3Err: unknown) {
+      const err = s3Err as Record<string, unknown>;
+      const metadata = (err?.$metadata as Record<string, unknown>) ?? {};
+      this.logger.error(
+        `S3 upload failed, falling back to local disk`,
+        JSON.stringify(
+          {
+            bucket: this.bucket,
+            region: this.region,
+            key,
+            errorCode: err?.Code ?? err?.code ?? 'UNKNOWN',
+            errorMessage: err?.message ?? String(s3Err),
+            requestId: metadata.requestId ?? 'N/A',
+            httpStatusCode: metadata.httpStatusCode ?? 'N/A',
+          },
+          null,
+          2,
+        ),
       );
 
       const dir = path.join(this.localUploadsDir, folder);
@@ -112,5 +129,30 @@ export class UploaderService implements OnModuleInit {
         Key: key,
       }),
     );
+  }
+
+  async getSignedUrl(
+    key: string | null,
+    expiresInSeconds = 3600,
+  ): Promise<string | null> {
+    if (!key) return null;
+    if (key.startsWith('local:')) {
+      return `/uploads/${key.slice('local:'.length)}`;
+    }
+    if (key.startsWith('http://') || key.startsWith('https://')) {
+      return key;
+    }
+    if (key.startsWith('/uploads/')) {
+      return key;
+    }
+
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+    });
+
+    return getSignedUrl(this.s3Client, command, {
+      expiresIn: expiresInSeconds,
+    });
   }
 }

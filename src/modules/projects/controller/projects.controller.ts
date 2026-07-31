@@ -12,6 +12,7 @@ import {
   UseGuards,
   UploadedFile,
 } from '@nestjs/common';
+import { memoryStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
@@ -52,7 +53,7 @@ export class ProjectsController {
   @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   async create(
     @Req() req: Request,
     @Body() dto: CreateProjectDto,

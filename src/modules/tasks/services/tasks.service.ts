@@ -34,6 +34,17 @@ export class TasksService {
     private readonly projectRepo: Repository<Project>,
   ) {}
 
+  private async resolveTaskImageUrls(task: Task | null): Promise<Task | null> {
+    if (!task?.images?.length) return task;
+    task.images = await Promise.all(
+      task.images.map(async (img) => {
+        img.url = (await this.uploaderService.getSignedUrl(img.key)) ?? '';
+        return img;
+      }),
+    );
+    return task;
+  }
+
   private async loadProjectWithMembers(projectId: string): Promise<Project> {
     const project = await this.projectRepo.findOne({
       where: { id: projectId },
@@ -119,7 +130,7 @@ export class TasksService {
       }
     }
 
-    return this.taskRepo.create({
+    const task = await this.taskRepo.create({
       title: dto.title,
       description: dto.description ?? null,
       priority: (dto.priority as TasksPriority) ?? undefined,
@@ -129,17 +140,23 @@ export class TasksService {
       assignee: dto.assigneeId ? ({ id: dto.assigneeId } as User) : null,
       images: images as TaskImage[],
     });
+
+    return this.resolveTaskImageUrls(task);
   }
 
   async findAll(userId: string) {
-    return this.taskRepo.findByUser(userId);
+    const tasks = await this.taskRepo.findByUser(userId);
+    await Promise.all(tasks.map((t) => this.resolveTaskImageUrls(t)));
+    return tasks;
   }
 
   async findByProject(projectId: string, userId: string) {
     const tasks = await this.taskRepo.findByProject(projectId);
-    return tasks.filter(
+    const filtered = tasks.filter(
       (t) => t.creator.id === userId || t.assignee?.id === userId,
     );
+    await Promise.all(filtered.map((t) => this.resolveTaskImageUrls(t)));
+    return filtered;
   }
 
   async findOne(id: string) {
@@ -147,7 +164,7 @@ export class TasksService {
     if (!task) {
       throw new NotFoundException('Task not found');
     }
-    return task;
+    return this.resolveTaskImageUrls(task);
   }
 
   async assignTask(id: string, assigneeId: string, userId: string) {
@@ -163,7 +180,8 @@ export class TasksService {
 
     task.assignee = { id: assigneeId } as User;
     await this.taskRepo.save(task);
-    return this.taskRepo.findById(id);
+    const updated = await this.taskRepo.findById(id);
+    return this.resolveTaskImageUrls(updated);
   }
 
   async unassignTask(id: string, userId: string) {
@@ -176,7 +194,8 @@ export class TasksService {
 
     task.assignee = null;
     await this.taskRepo.save(task);
-    return this.taskRepo.findById(id);
+    const updated = await this.taskRepo.findById(id);
+    return this.resolveTaskImageUrls(updated);
   }
 
   async selfAssignTask(id: string, userId: string) {
@@ -195,7 +214,8 @@ export class TasksService {
 
     task.assignee = { id: userId } as User;
     await this.taskRepo.save(task);
-    return this.taskRepo.findById(id);
+    const updated = await this.taskRepo.findById(id);
+    return this.resolveTaskImageUrls(updated);
   }
 
   async selfUnassignTask(id: string, userId: string) {
@@ -212,7 +232,8 @@ export class TasksService {
 
     task.assignee = null;
     await this.taskRepo.save(task);
-    return this.taskRepo.findById(id);
+    const updated = await this.taskRepo.findById(id);
+    return this.resolveTaskImageUrls(updated);
   }
 
   async updateTask(
@@ -268,7 +289,8 @@ export class TasksService {
     }
 
     await this.taskRepo.save(task);
-    return this.taskRepo.findById(id);
+    const updated = await this.taskRepo.findById(id);
+    return this.resolveTaskImageUrls(updated);
   }
 
   async updateTaskStatus(id: string, userId: string, dto: UpdateTaskStatusDto) {
@@ -295,7 +317,8 @@ export class TasksService {
     }
 
     await this.taskRepo.save(task);
-    return this.taskRepo.findById(id);
+    const updated = await this.taskRepo.findById(id);
+    return this.resolveTaskImageUrls(updated);
   }
 
   async deleteTask(id: string, userId: string) {

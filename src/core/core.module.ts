@@ -15,12 +15,12 @@ import { AllExceptionsFilter } from '@common/index';
       {
         name: 'default',
         ttl: 60000, // 1 minute
-        limit: 60, // 60 requests per minute
+        limit: 250, // 60 requests per minute
       },
       {
         name: 'strict',
         ttl: 60000, // 1 minute
-        limit: 10, // For sensitive endpoints
+        limit: 250, // For sensitive endpoints
       },
       {
         name: 'auth',

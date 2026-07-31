@@ -8,6 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateProjectDto {
   @ApiProperty({
@@ -37,6 +38,18 @@ export class CreateProjectDto {
       '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
     ],
     isArray: true,
+  })
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string' && value.trim()) {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [value];
+      } catch {
+        return [value];
+      }
+    }
+    return [];
   })
   @IsOptional()
   @IsArray()
