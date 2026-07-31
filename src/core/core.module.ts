@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { RouterModule, APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 
 // modules imports
-import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 
 // common imports
@@ -12,13 +11,6 @@ import { AllExceptionsFilter } from '@common/index';
 
 @Module({
   imports: [
-    RouterModule.register([
-      { path: 'auth', module: AuthModule },
-      {
-        path: 'users',
-        module: UsersModule,
-      },
-    ]),
     ThrottlerModule.forRoot([
       {
         name: 'default',

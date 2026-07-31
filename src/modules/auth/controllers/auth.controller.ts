@@ -17,7 +17,7 @@ import { Response } from 'express';
 import ms from 'ms';
 
 @ApiTags('Auth')
-@Controller()
+@Controller('auth')
 @Public()
 @UseInterceptors(TransformResponseInterceptor)
 export class AuthController {
