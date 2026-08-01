@@ -8,50 +8,63 @@ import { Repository } from 'typeorm';
 // entity imports.
 import { Notes } from '../entity/notes.entity';
 
+// Types imports
+import { CreateNoteType } from '../types/createNote.type';
+
 @Injectable()
 export class NotesRepository {
   constructor(
     @InjectRepository(Notes)
     private readonly repo: Repository<Notes>,
   ) {}
-  async create(createNoteDto: any): Promise<Notes> {
-    const note = this.repo.create(createNoteDto);
-    const [saved] = await this.repo.save(note);
+  async create(noteData: CreateNoteType, userId: string): Promise<Notes> {
+    const note = this.repo.create({ ...noteData, user: { id: userId } });
+    const saved = await this.repo.save(note);
     return saved;
   }
 
-  async findById(id: string): Promise<Notes | null> {
+  async findById(id: string, userId: string): Promise<Notes | null> {
     const note = this.repo.findOneByOrFail({
       id,
+      user: { id: userId },
     });
     return note;
   }
-  async findAll(): Promise<Notes[]> {
-    const notes = this.repo.find();
+  async findAll(userId: string): Promise<Notes[]> {
+    const notes = this.repo.find({
+      where: { user: { id: userId } },
+    });
     return notes;
   }
-  async delete(id: string): Promise<void> {
-    await this.repo.delete({ id });
+  async delete(id: string, userId: string): Promise<void> {
+    await this.repo.delete({ id, user: { id: userId } });
   }
-  async update(id: string, updateNoteDto: any): Promise<Notes> {
+  async update(
+    id: string,
+    noteData: Partial<CreateNoteType>,
+    userId: string,
+  ): Promise<Notes> {
     const note = await this.repo.findOneByOrFail({
       id,
+      user: { id: userId },
     });
-    this.repo.merge(note, updateNoteDto);
+    this.repo.merge(note, noteData);
     return this.repo.save(note);
   }
 
-  async activate(id: string): Promise<Notes> {
-    this.repo.update({ id }, { isActive: true });
+  async activate(id: string, userId: string): Promise<Notes> {
+    this.repo.update({ id, user: { id: userId } }, { isActive: true });
     const note = await this.repo.findOneByOrFail({
       id,
+      user: { id: userId },
     });
     return note;
   }
-  async deactivate(id: string): Promise<Notes> {
-    this.repo.update({ id }, { isActive: false });
+  async deactivate(id: string, userId: string): Promise<Notes> {
+    this.repo.update({ id, user: { id: userId } }, { isActive: false });
     const note = await this.repo.findOneByOrFail({
       id,
+      user: { id: userId },
     });
     return note;
   }

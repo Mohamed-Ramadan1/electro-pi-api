@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { BaseEntity } from '@common/index';
+import { BaseEntity } from '@common/entities/base.entity';
 import { User } from '@modules/users/entity/user.entity';
 
 @Entity('notes')

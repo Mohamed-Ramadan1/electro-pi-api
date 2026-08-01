@@ -1,54 +1,119 @@
-// nest module imports
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
-// repository  imports
 import { NotesRepository } from '../repo/notes.repo';
 
-// DTO imports
+import { CreateNoteType } from '../types/createNote.type';
 import { CreateNoteDto } from '../dto/createNote.dto';
 import { UpdateNoteDto } from '../dto/updateNote.dto';
 
-// entity imports.
 import { Notes } from '../entity/notes.entity';
 
-// infrastructure imports
 import { UploaderService } from '@infrastructure/index';
+
+import { UploadedFile } from '@common/index';
 
 @Injectable()
 export class NotesService {
-  constructor(private readonly notesRepo: NotesRepository) {}
+  private readonly logger = new Logger(NotesService.name);
+  private readonly uploadFolderName = 'notes';
+
+  constructor(
+    private readonly notesRepo: NotesRepository,
+    private readonly uploaderService: UploaderService,
+  ) {}
+
+  private async resolveImageUrl(note: Notes): Promise<void> {
+    note.imageUrl = await this.uploaderService.getSignedUrl(note.imageKey);
+  }
+
+  private async resolveImageUrls(notes: Notes[]): Promise<void> {
+    await Promise.all(notes.map((n) => this.resolveImageUrl(n)));
+  }
+
   async createNote(
-    createNoteDto: CreateNoteDto,
-    file?: Express.Multer.File,
+    noteData: CreateNoteDto,
+    userId: string,
+    file?: UploadedFile,
   ): Promise<Notes> {
-    return this.notesRepo.create(createNoteDto);
+    const note: CreateNoteType = {
+      title: noteData.title,
+      content: noteData.content,
+      userId,
+    };
+
+    if (file) {
+      try {
+        const { key } = await this.uploaderService.uploadResource(
+          file,
+          this.uploadFolderName,
+        );
+        note.imageKey = key;
+      } catch (err) {
+        this.logger.error(
+          `Failed to upload note image: ${(err as Error).message}`,
+        );
+      }
+    }
+
+    const created = await this.notesRepo.create(note, userId);
+    await this.resolveImageUrl(created);
+    return created;
   }
 
-  getNote(id: string): Promise<Notes | null> {
-    return this.notesRepo.findById(id);
+  async getNote(id: string, userId: string): Promise<Notes | null> {
+    const note = await this.notesRepo.findById(id, userId);
+    if (note) {
+      await this.resolveImageUrl(note);
+    }
+    return note;
   }
 
-  getNotes(): Promise<Notes[]> {
-    return this.notesRepo.findAll();
+  async getNotes(userId: string): Promise<Notes[]> {
+    const notes = await this.notesRepo.findAll(userId);
+    await this.resolveImageUrls(notes);
+    return notes;
   }
 
-  updateNote(
+  async updateNote(
     id: string,
     updateNoteDto: UpdateNoteDto,
-    file?: Express.Multer.File,
+    userId: string,
+    file?: UploadedFile,
   ): Promise<Notes> {
-    return this.notesRepo.update(id, updateNoteDto);
+    const note: Partial<CreateNoteType> = { ...updateNoteDto };
+
+    if (file) {
+      try {
+        const { key } = await this.uploaderService.uploadResource(
+          file,
+          this.uploadFolderName,
+        );
+        note.imageKey = key;
+      } catch (err) {
+        this.logger.error(
+          `Failed to upload note image: ${(err as Error).message}`,
+        );
+      }
+    }
+
+    const updated = await this.notesRepo.update(id, note, userId);
+    await this.resolveImageUrl(updated);
+    return updated;
   }
 
-  deleteNote(id: string): Promise<void> {
-    return this.notesRepo.delete(id);
+  async deleteNote(id: string, userId: string): Promise<void> {
+    return this.notesRepo.delete(id, userId);
   }
 
-  activateNote(id: string): Promise<Notes> {
-    return this.notesRepo.activate(id);
+  async activateNote(id: string, userId: string): Promise<Notes> {
+    const note = await this.notesRepo.activate(id, userId);
+    await this.resolveImageUrl(note);
+    return note;
   }
 
-  deactivateNote(id: string): Promise<Notes> {
-    return this.notesRepo.deactivate(id);
+  async deactivateNote(id: string, userId: string): Promise<Notes> {
+    const note = await this.notesRepo.deactivate(id, userId);
+    await this.resolveImageUrl(note);
+    return note;
   }
 }

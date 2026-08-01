@@ -10,11 +10,8 @@ import { User } from '@modules/users/entity/user.entity';
 import { Project } from '../entity/project.entity';
 import { CreateProjectDto } from '../dto/create-project.dto';
 
-interface UploadedFile {
-  buffer: Buffer;
-  originalname: string;
-  mimetype: string;
-}
+//common imports
+import { UploadedFile } from '@common/index';
 
 @Injectable()
 export class ProjectsService {
@@ -33,7 +30,9 @@ export class ProjectsService {
 
   private async mapProjectImage(project: Project | null): Promise<void> {
     if (!project) return;
-    project.projectImage = await this.resolveProjectImageUrl(project.projectImage);
+    project.projectImage = await this.resolveProjectImageUrl(
+      project.projectImage,
+    );
   }
 
   async createProject(
@@ -41,17 +40,8 @@ export class ProjectsService {
     creatorId: string,
     file?: UploadedFile,
   ) {
-    console.log('[ProjectsService] createProject called');
-    console.log('[ProjectsService] dto:', JSON.stringify(dto));
-    console.log('[ProjectsService] creatorId:', creatorId);
-    console.log(
-      '[ProjectsService] file:',
-      file ? `${file.originalname} (${file.buffer.length}b)` : 'NONE',
-    );
-
     const existing = await this.projectRepo.findByName(dto.name);
     if (existing) {
-      console.log('[ProjectsService] CONFLICT: name already exists');
       throw new ConflictException('A project with this name already exists');
     }
 
@@ -59,29 +49,19 @@ export class ProjectsService {
 
     if (file) {
       try {
-        console.log('[ProjectsService] Uploading to S3...');
         const { key } = await this.uploaderService.uploadResource(
           file,
           'project-covers',
         );
         projectImage = key;
-        console.log('[ProjectsService] Upload SUCCESS. Key:', key);
       } catch (err) {
-        console.log('[ProjectsService] Upload FAILED:', (err as Error).message);
         this.logger.error(
           `Failed to upload project image: ${(err as Error).message}`,
         );
       }
     }
 
-    console.log(
-      '[ProjectsService] Saving project to DB. projectImage:',
-      projectImage,
-    );
-
-    const memberIds = Array.from(
-      new Set([creatorId, ...(dto.members ?? [])]),
-    );
+    const memberIds = Array.from(new Set([creatorId, ...(dto.members ?? [])]));
 
     return this.projectRepo.create({
       name: dto.name,

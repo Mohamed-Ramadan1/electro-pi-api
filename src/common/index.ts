@@ -20,3 +20,6 @@ export { BaseEntity } from './entities/base.entity';
 
 // Pipes
 export { FileSizeValidationPipe } from './pipes/file-size-validation.pipe';
+
+// interfaces exports
+export { UploadedFile } from './interfaces/uploadedFile.interface';
