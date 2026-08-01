@@ -1,15 +1,11 @@
 import {
   Entity,
-  PrimaryColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   Column,
-  Index,
   ManyToOne,
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-
+import { BaseEntity } from '@common/index';
 import { User } from '@modules/users/entity/user.entity';
 import { Project } from '@modules/projects/entity/project.entity';
 import { TaskImage } from './task-image.entity';
@@ -23,20 +19,13 @@ import {
 } from '../constants/taskst.const';
 
 @Entity('tasks')
-export class Task {
-  @PrimaryColumn({
-    type: 'uuid',
-    default: () => 'gen_random_uuid()',
-  })
-  id!: string;
-
+export class Task extends BaseEntity {
   @Column({ type: 'varchar', length: 200 })
   title!: string;
 
   @Column({ type: 'text', nullable: true })
   description!: string | null;
 
-  @Index()
   @Column({
     type: 'enum',
     enum: tasksStatus,
@@ -44,7 +33,6 @@ export class Task {
   })
   status!: TasksStatus;
 
-  @Index()
   @Column({
     type: 'enum',
     enum: tasksPriority,
@@ -52,7 +40,6 @@ export class Task {
   })
   priority!: TasksPriority;
 
-  @Index()
   @Column({ type: 'timestamp', nullable: true })
   dueDate!: Date | null;
 
@@ -73,10 +60,4 @@ export class Task {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'assignee_id' })
   assignee!: User | null;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt!: Date;
 }

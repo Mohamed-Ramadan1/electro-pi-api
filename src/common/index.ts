@@ -14,3 +14,6 @@ export { UserRoles, UserRole, DEFAULT_ROLE } from './constants/roles.constants';
 export { Protected } from './decorators/protected.decorator';
 export { Public } from './decorators/public.decorator';
 export { Roles } from './decorators/roles.decorator';
+
+// Entities
+export { BaseEntity } from './entities/base.entity';

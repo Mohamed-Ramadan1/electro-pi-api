@@ -1,22 +1,9 @@
-import {
-  Entity,
-  PrimaryColumn,
-  CreateDateColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
-
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity } from '@common/index';
 import { Task } from './task.entity';
 
 @Entity('task_images')
-export class TaskImage {
-  @PrimaryColumn({
-    type: 'uuid',
-    default: () => 'gen_random_uuid()',
-  })
-  id!: string;
-
+export class TaskImage extends BaseEntity {
   @Column({ type: 'varchar', length: 500 })
   key!: string;
 
@@ -29,7 +16,4 @@ export class TaskImage {
   @ManyToOne(() => Task, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'task_id' })
   task!: Task;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt!: Date;
 }

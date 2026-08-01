@@ -1,17 +1,15 @@
 import {
   Entity,
-  PrimaryColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   Column,
-  Index,
   ManyToOne,
   ManyToMany,
+  OneToMany,
   JoinColumn,
   JoinTable,
 } from 'typeorm';
-
+import { BaseEntity } from '@common/index';
 import { User } from '@modules/users/entity/user.entity';
+import { Task } from '@modules/tasks/entity/task.entity';
 import {
   projectStatus,
   ProjectStatus,
@@ -19,13 +17,7 @@ import {
 } from '../constants/projects.cons';
 
 @Entity('projects')
-export class Project {
-  @PrimaryColumn({
-    type: 'uuid',
-    default: () => 'gen_random_uuid()',
-  })
-  id!: string;
-
+export class Project extends BaseEntity {
   @Column({ type: 'varchar', length: 150 })
   name!: string;
 
@@ -35,17 +27,6 @@ export class Project {
   @Column({ type: 'text', nullable: true })
   description!: string | null;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt!: Date;
-
-  @Index()
-  @Column({ type: 'boolean', default: true })
-  isActive!: boolean;
-
-  @Index()
   @Column({
     type: 'enum',
     enum: projectStatus,
@@ -71,4 +52,7 @@ export class Project {
     inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
   })
   members!: User[];
+
+  @OneToMany(() => Task, (task) => task.project)
+  tasks!: Task[];
 }
