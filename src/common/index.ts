@@ -22,4 +22,7 @@ export { BaseEntity } from './entities/base.entity';
 export { FileSizeValidationPipe } from './pipes/file-size-validation.pipe';
 
 // interfaces exports
-export { UploadedFile } from './interfaces/uploadedFile.interface';
+export {
+  UploadedFile,
+  UploadedFileOptional,
+} from './interfaces/uploadedFile.interface';

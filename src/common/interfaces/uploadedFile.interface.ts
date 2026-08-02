@@ -3,3 +3,5 @@ export interface UploadedFile {
   originalname: string;
   mimetype: string;
 }
+
+export type UploadedFileOptional = UploadedFile | undefined;

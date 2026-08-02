@@ -23,7 +23,7 @@ import { DatabaseService } from './services/database.service';
           migrationsTableName: 'typeorm_migrations',
           synchronize: false,
           autoLoadEntities: true,
-          migrationsRun: false,
+          migrationsRun: true,
           logging: isDev,
           maxQueryExecutionTime: 1000,
         };

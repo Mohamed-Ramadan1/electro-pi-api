@@ -41,6 +41,7 @@ import {
   TransformResponseInterceptor,
   Protected,
   FileSizeValidationPipe,
+  UploadedFileOptional,
 } from '@common/index';
 
 @ApiTags('Notes')
@@ -127,7 +128,7 @@ export class NotesController {
     @Req() req: Request,
     @Body() createNoteDto: CreateNoteDto,
     @UploadedFile(new FileSizeValidationPipe())
-    file?: { buffer: Buffer; originalname: string; mimetype: string },
+    file?: UploadedFileOptional,
   ) {
     const note = await this.notesService.createNote(
       createNoteDto,
@@ -182,7 +183,7 @@ export class NotesController {
     @Body() updateNoteDto: UpdateNoteDto,
     @Req() req: Request,
     @UploadedFile(new FileSizeValidationPipe())
-    file?: { buffer: Buffer; originalname: string; mimetype: string },
+    file?: UploadedFileOptional,
   ) {
     const note = await this.notesService.updateNote(
       id,
