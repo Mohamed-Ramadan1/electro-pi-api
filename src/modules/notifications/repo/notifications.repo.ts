@@ -20,4 +20,42 @@ export class NotificationsRepo {
       },
     });
   }
+
+  findAll(userid: string): Promise<Notifications[]> {
+    return this.notificationsRepository.find({
+      where: {
+        user: { id: userid },
+      },
+    });
+  }
+  findOne(id: string): Promise<Notifications | null> {
+    return this.notificationsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async markAllRead(userId: string): Promise<void> {
+    await this.notificationsRepository.update(
+      { user: { id: userId }, isRead: false },
+      { isRead: true, readAt: new Date() },
+    );
+  }
+
+  async deleteNotification(
+    userId: string,
+    notificationId: string,
+  ): Promise<void> {
+    await this.notificationsRepository.delete({
+      id: notificationId,
+      user: { id: userId },
+    });
+  }
+
+  async deleteNotifications(userId): Promise<void> {
+    await this.notificationsRepository.delete({
+      user: { id: userId },
+    });
+  }
 }

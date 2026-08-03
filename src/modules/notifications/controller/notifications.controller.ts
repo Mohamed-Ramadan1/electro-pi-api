@@ -14,8 +14,10 @@ import { Request } from 'express';
 
 //service imports
 import { NotificationsService } from '../service/notifications.service';
-import { TransformResponseInterceptor } from '@common/index';
+import { Protected, TransformResponseInterceptor } from '@common/index';
+
 @Controller('notifications')
+@Protected()
 @UseInterceptors(TransformResponseInterceptor)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
@@ -28,8 +30,8 @@ export class NotificationsController {
 
   @HttpCode(HttpStatus.OK)
   @Get('count')
-  count(@Req() req: Request) {
-    const count = this.notificationsService.count(req.user.id);
+  async count(@Req() req: Request) {
+    const count = await this.notificationsService.count(req.user.id);
     return { message: 'Notifications count retrieved successfully', count };
   }
 
