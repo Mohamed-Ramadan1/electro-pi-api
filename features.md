@@ -32,6 +32,8 @@
 
 ## Projects
 
+## Payments
+
 ## Notifications
 
     basic in app ones
