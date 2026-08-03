@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule as JwtMo } from '@nestjs/jwt';
 
@@ -9,6 +9,7 @@ import {
 import { JWT_CONFIG } from './constants/jwt.constants';
 import { TokenService } from './services/token.service';
 
+@Global()
 @Module({
   imports: [
     JwtMo.registerAsync({

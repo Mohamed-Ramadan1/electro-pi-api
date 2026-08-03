@@ -13,5 +13,11 @@ export class NotificationsRepo {
     private readonly notificationsRepository: Repository<Notifications>,
   ) {}
 
-  // Add your repository methods here
+  count(userid: string): Promise<number> {
+    return this.notificationsRepository.count({
+      where: {
+        user: { id: userid },
+      },
+    });
+  }
 }

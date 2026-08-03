@@ -7,7 +7,9 @@ import { NotificationsRepo } from '../repo/notifications.repo';
 export class NotificationsService {
   constructor(private readonly notificationsRepo: NotificationsRepo) {}
 
-  count() {}
+  async count(userid: string): Promise<number> {
+    return this.notificationsRepo.count(userid);
+  }
   markAsRead() {}
   getNotifications() {}
   deleteNotification() {}
