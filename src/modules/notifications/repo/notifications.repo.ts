@@ -2,7 +2,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 
 // external package imports
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 // Entity import
 import { Notifications } from '../entity/notifications.entity';
@@ -36,25 +36,25 @@ export class NotificationsRepo {
     });
   }
 
-  async markAllRead(userId: string): Promise<void> {
-    await this.notificationsRepository.update(
+  markAllRead(userId: string): Promise<UpdateResult> {
+    return this.notificationsRepository.update(
       { user: { id: userId }, isRead: false },
       { isRead: true, readAt: new Date() },
     );
   }
 
-  async deleteNotification(
+  deleteNotification(
     userId: string,
     notificationId: string,
-  ): Promise<void> {
-    await this.notificationsRepository.delete({
+  ): Promise<DeleteResult> {
+    return this.notificationsRepository.delete({
       id: notificationId,
       user: { id: userId },
     });
   }
 
-  async deleteNotifications(userId): Promise<void> {
-    await this.notificationsRepository.delete({
+  deleteNotifications(userId: string): Promise<DeleteResult> {
+    return this.notificationsRepository.delete({
       user: { id: userId },
     });
   }
