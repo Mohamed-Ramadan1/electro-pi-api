@@ -6,6 +6,7 @@ import {
   DEFAULT_ROLE,
 } from '@common/constants/roles.constants';
 import { Notes } from '@modules/notes/entity/notes.entity';
+import { Notifications } from '@modules/notifications/entity/notifications.entity';
 import { Task } from '@modules/tasks/entity/task.entity';
 import { Project } from '@modules/projects/entity/project.entity';
 
@@ -43,6 +44,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Notes, (note) => note.user)
   notes!: Notes[];
+
+  @OneToMany(() => Notifications, (notification) => notification.user)
+  notifications!: Notifications[];
 
   @OneToMany(() => Task, (task) => task.creator)
   createdTasks!: Task[];
