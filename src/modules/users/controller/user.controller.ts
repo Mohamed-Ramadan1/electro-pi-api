@@ -32,7 +32,7 @@ import {
 
 @ApiTags('Users')
 @ApiBearerAuth()
-@Controller()
+@Controller('users')
 @Protected()
 @Roles(UserRoles.ADMIN)
 @UseGuards(RolesGuard)

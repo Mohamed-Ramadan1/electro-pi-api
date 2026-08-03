@@ -7,13 +7,11 @@ import {
 import { ProjectRepository } from '../repo/project.repo';
 import { UploaderService } from '@infrastructure/index';
 import { User } from '@modules/users/entity/user.entity';
+import { Project } from '../entity/project.entity';
 import { CreateProjectDto } from '../dto/create-project.dto';
 
-interface UploadedFile {
-  buffer: Buffer;
-  originalname: string;
-  mimetype: string;
-}
+//common imports
+import { UploadedFile } from '@common/index';
 
 @Injectable()
 export class ProjectsService {
@@ -24,22 +22,26 @@ export class ProjectsService {
     private readonly uploaderService: UploaderService,
   ) {}
 
+  private async resolveProjectImageUrl(
+    imageKey: string | null,
+  ): Promise<string | null> {
+    return this.uploaderService.getSignedUrl(imageKey);
+  }
+
+  private async mapProjectImage(project: Project | null): Promise<void> {
+    if (!project) return;
+    project.projectImage = await this.resolveProjectImageUrl(
+      project.projectImage,
+    );
+  }
+
   async createProject(
     dto: CreateProjectDto,
     creatorId: string,
     file?: UploadedFile,
   ) {
-    console.log('[ProjectsService] createProject called');
-    console.log('[ProjectsService] dto:', JSON.stringify(dto));
-    console.log('[ProjectsService] creatorId:', creatorId);
-    console.log(
-      '[ProjectsService] file:',
-      file ? `${file.originalname} (${file.buffer.length}b)` : 'NONE',
-    );
-
     const existing = await this.projectRepo.findByName(dto.name);
     if (existing) {
-      console.log('[ProjectsService] CONFLICT: name already exists');
       throw new ConflictException('A project with this name already exists');
     }
 
@@ -47,37 +49,33 @@ export class ProjectsService {
 
     if (file) {
       try {
-        console.log('[ProjectsService] Uploading to S3...');
-        const { url } = await this.uploaderService.uploadResource(
+        const { key } = await this.uploaderService.uploadResource(
           file,
           'project-covers',
         );
-        projectImage = url;
-        console.log('[ProjectsService] Upload SUCCESS. URL:', url);
+        projectImage = key;
       } catch (err) {
-        console.log('[ProjectsService] Upload FAILED:', (err as Error).message);
         this.logger.error(
           `Failed to upload project image: ${(err as Error).message}`,
         );
       }
     }
 
-    console.log(
-      '[ProjectsService] Saving project to DB. projectImage:',
-      projectImage,
-    );
+    const memberIds = Array.from(new Set([creatorId, ...(dto.members ?? [])]));
 
     return this.projectRepo.create({
       name: dto.name,
       description: dto.description ?? null,
       projectImage,
       creator: { id: creatorId } as User,
-      members: (dto.members ?? []).map((id) => ({ id }) as User),
+      members: memberIds.map((id) => ({ id }) as User),
     });
   }
 
-  findAll(userId: string) {
-    return this.projectRepo.findByUser(userId);
+  async findAll(userId: string) {
+    const projects = await this.projectRepo.findByUser(userId);
+    await Promise.all(projects.map((p) => this.mapProjectImage(p)));
+    return projects;
   }
 
   async findOne(id: string, userId: string) {
@@ -85,6 +83,7 @@ export class ProjectsService {
     if (!project) {
       throw new NotFoundException('Project not found');
     }
+    await this.mapProjectImage(project);
     return project;
   }
 
@@ -110,7 +109,9 @@ export class ProjectsService {
     project.members.push({ id: userId } as User);
     await this.projectRepo.save(project);
 
-    return this.projectRepo.findById(projectId);
+    const updated = await this.projectRepo.findById(projectId);
+    await this.mapProjectImage(updated);
+    return updated;
   }
 
   async removeMember(projectId: string, userId: string) {
@@ -122,7 +123,9 @@ export class ProjectsService {
     project.members = project.members.filter((m) => m.id !== userId);
     await this.projectRepo.save(project);
 
-    return this.projectRepo.findById(projectId);
+    const updated = await this.projectRepo.findById(projectId);
+    await this.mapProjectImage(updated);
+    return updated;
   }
 
   async closeProject(id: string) {
@@ -133,7 +136,9 @@ export class ProjectsService {
 
     await this.projectRepo.updateStatus(id, 'closed');
 
-    return this.projectRepo.findById(id);
+    const updated = await this.projectRepo.findById(id);
+    await this.mapProjectImage(updated);
+    return updated;
   }
 
   async reopenProject(id: string) {
@@ -144,6 +149,8 @@ export class ProjectsService {
 
     await this.projectRepo.updateStatus(id, 'open');
 
-    return this.projectRepo.findById(id);
+    const updated = await this.projectRepo.findById(id);
+    await this.mapProjectImage(updated);
+    return updated;
   }
 }

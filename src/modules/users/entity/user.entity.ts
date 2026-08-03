@@ -1,25 +1,17 @@
-import {
-  Entity,
-  PrimaryColumn,
-  CreateDateColumn,
-  Column,
-  Index,
-} from 'typeorm';
-
+import { Entity, Column, OneToMany, ManyToMany } from 'typeorm';
+import { BaseEntity } from '@common/entities/base.entity';
 import {
   UserRoles,
   UserRole,
   DEFAULT_ROLE,
 } from '@common/constants/roles.constants';
+import { Notes } from '@modules/notes/entity/notes.entity';
+import { Notifications } from '@modules/notifications/entity/notifications.entity';
+import { Task } from '@modules/tasks/entity/task.entity';
+import { Project } from '@modules/projects/entity/project.entity';
 
 @Entity('users')
-export class User {
-  @PrimaryColumn({
-    type: 'uuid',
-    default: () => 'gen_random_uuid()',
-  })
-  id!: string;
-
+export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 100 })
   name!: string;
 
@@ -29,11 +21,6 @@ export class User {
   @Column({ type: 'varchar', length: 255, select: false })
   passwordHash!: string;
 
-  @Index()
-  @Column({ type: 'boolean', default: true })
-  isActive!: boolean;
-
-  // Option A: native Postgres array of an enum
   @Column({
     type: 'enum',
     enum: UserRoles,
@@ -49,15 +36,27 @@ export class User {
   })
   profileImage!: string | null;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt!: Date;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  updatedAt!: Date;
-
   @Column({ type: 'timestamp', nullable: true })
   termsAcceptedAt!: Date | null;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
   termsVersion!: string | null;
+
+  @OneToMany(() => Notes, (note) => note.user)
+  notes!: Notes[];
+
+  @OneToMany(() => Notifications, (notification) => notification.user)
+  notifications!: Notifications[];
+
+  @OneToMany(() => Task, (task) => task.creator)
+  createdTasks!: Task[];
+
+  @OneToMany(() => Task, (task) => task.assignee)
+  assignedTasks!: Task[];
+
+  @OneToMany(() => Project, (project) => project.creator)
+  createdProjects!: Project[];
+
+  @ManyToMany(() => Project, (project) => project.members)
+  memberProjects!: Project[];
 }
