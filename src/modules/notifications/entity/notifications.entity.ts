@@ -9,7 +9,10 @@ import {
 
 @Entity('notifications')
 export class Notifications extends BaseEntity {
-  @ManyToOne(() => User, (user) => user.notifications, { nullable: false })
+  @ManyToOne(() => User, (user) => user.notifications, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
