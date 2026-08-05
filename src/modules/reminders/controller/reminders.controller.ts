@@ -28,6 +28,7 @@ import { CreateReminderDto } from '../dto/create-reminder.dto';
 import { UpdateReminderDto } from '../dto/update-reminder.dto';
 import { ReminderResponseDto } from '../dto/reminder-response.dto';
 import { RescheduleReminderDto } from '../dto/reschedule-reminder.dto';
+import { SnoozeReminderDto } from '../dto/snooze-reminder.dto';
 
 // common imports
 import { Protected, TransformResponseInterceptor } from '@common/index';
@@ -55,6 +56,27 @@ export class RemindersController {
   @Get()
   async getReminders(@Req() req: Request) {
     const reminders = await this.reminderService.getReminders(req.user.id);
+    return {
+      message: 'Reminders retrieved successfully.',
+      reminders,
+    };
+  }
+
+  @ApiOperation({
+    summary: 'List upcoming reminders for the authenticated user',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Upcoming reminders retrieved successfully.',
+    type: [ReminderResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @HttpCode(HttpStatus.OK)
+  @Get('upcoming')
+  async getUpcomingReminders(@Req() req: Request) {
+    const reminders = await this.reminderService.getUpcomingReminders(
+      req.user.id,
+    );
     return {
       message: 'Reminders retrieved successfully.',
       reminders,
@@ -158,6 +180,16 @@ export class RemindersController {
     };
   }
 
+  @ApiOperation({ summary: 'Reschedule a reminder by ID' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminder rescheduled successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
+  @HttpCode(HttpStatus.OK)
   @Patch(':id/reschedule')
   async rescheduleReminder(
     @Req() req: Request,
@@ -170,6 +202,15 @@ export class RemindersController {
     };
   }
 
+  @ApiOperation({ summary: 'Toggle active status of a reminder' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminder toggled successfully.',
+    type: ReminderResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
   @HttpCode(HttpStatus.OK)
   @Patch(':id/toggle')
   async toggleReminder(@Req() req: Request, @Param('id') id: string) {
@@ -180,31 +221,53 @@ export class RemindersController {
     };
   }
 
-  // --------------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Acknowledge / mark a reminder as done' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminder acknowledged successfully.',
+    type: ReminderResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
+  @HttpCode(HttpStatus.OK)
+  @Patch(':id/acknowledge')
+  async acknowledgeReminder(@Req() req: Request, @Param('id') id: string) {
+    const reminder = await this.reminderService.acknowledgeReminder(
+      req.user.id,
+      id,
+    );
+    return {
+      message: 'Reminders marked as done  successfully.',
+      reminder,
+    };
+  }
+
+  @ApiOperation({ summary: 'Snooze a reminder by a number of minutes' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminder snoozed successfully.',
+    type: ReminderResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
   @HttpCode(HttpStatus.OK)
   @Patch(':id/snooze')
-  snoozeReminder() {
-    this.reminderService.snoozeReminder();
+  async snoozeReminder(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() data: SnoozeReminderDto,
+  ) {
+    const reminder = await this.reminderService.snoozeReminder(
+      req.user.id,
+      id,
+      data,
+    );
     return {
-      message: 'Reminders retrieved successfully.',
-    };
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @Get('upcoming')
-  getUpcomingReminders() {
-    this.reminderService.getUpcomingReminders();
-    return {
-      message: 'Reminders retrieved successfully.',
-    };
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @Post(':id/acknowledge')
-  acknowledgeReminder() {
-    this.reminderService.acknowledgeReminder();
-    return {
-      message: 'Reminders retrieved successfully.',
+      message: 'Reminder snoozed successfully.',
+      reminder,
     };
   }
 }

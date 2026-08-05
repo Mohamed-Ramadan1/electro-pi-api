@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeleteResult,
+  Repository,
+  UpdateResult,
+  MoreThanOrEqual,
+} from 'typeorm';
 
 import { Reminder } from '../entity/reminder.entity';
 import { CreateReminderDto } from '../dto/create-reminder.dto';
@@ -89,5 +94,46 @@ export class ReminderRepository {
     reminder.isActive = !reminder.isActive;
 
     return this.reminderRepo.save(reminder);
+  }
+
+  async snooze(
+    userId: string,
+    reminderId: string,
+    snoozeMinutes: number,
+  ): Promise<Reminder> {
+    const reminder = await this.reminderRepo.findOneByOrFail({
+      id: reminderId,
+      user: { id: userId },
+    });
+
+    reminder.snoozeMinutes = snoozeMinutes;
+    reminder.nextTriggerAt = new Date(Date.now() + snoozeMinutes * 60 * 1000);
+    reminder.isSent = false;
+
+    return this.reminderRepo.save(reminder);
+  }
+
+  async markDone(userId: string, reminDerId: string): Promise<Reminder> {
+    const reminder = await this.reminderRepo.findOneByOrFail({
+      id: reminDerId,
+      user: { id: userId },
+    });
+
+    reminder.isCompleted = true;
+    reminder.isSent = true;
+    return this.reminderRepo.save(reminder);
+  }
+
+  getUserUpcoming(userId: string): Promise<Reminder[]> {
+    const now = new Date();
+    return this.reminderRepo.find({
+      where: {
+        user: { id: userId },
+        reminderAt: MoreThanOrEqual(now),
+      },
+      order: {
+        reminderAt: 'ASC',
+      },
+    });
   }
 }
