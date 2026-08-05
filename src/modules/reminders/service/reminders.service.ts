@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DeleteResult } from 'typeorm';
 
 // Repository import
@@ -38,19 +38,12 @@ export class RemindersService {
     return this.reminderRepo.deleteById(userId, reminderId);
   }
 
-  async updateReminder(
+  updateReminder(
     userId: string,
     reminderId: string,
     updateReminderData: UpdateReminderDto,
-  ): Promise<void> {
-    const result = await this.reminderRepo.update(
-      userId,
-      reminderId,
-      updateReminderData,
-    );
-    if (result.affected === 0) {
-      throw new NotFoundException('Reminder not found.');
-    }
+  ): Promise<Reminder> {
+    return this.reminderRepo.update(userId, reminderId, updateReminderData);
   }
 
   rescheduleReminder() {}

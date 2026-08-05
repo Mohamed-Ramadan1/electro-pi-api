@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 import { Reminder } from '../entity/reminder.entity';
 import { CreateReminderDto } from '../dto/create-reminder.dto';
@@ -21,15 +21,17 @@ export class ReminderRepository {
     return this.reminderRepo.save(reminder);
   }
 
-  update(
+  async update(
     userId: string,
     reminderId: string,
     updateData: UpdateReminderDto,
-  ): Promise<UpdateResult> {
-    return this.reminderRepo.update(
-      { user: { id: userId }, id: reminderId },
-      { ...updateData },
-    );
+  ): Promise<Reminder> {
+    const reminder = await this.reminderRepo.findOneByOrFail({
+      user: { id: userId },
+      id: reminderId,
+    });
+    this.reminderRepo.merge(reminder, updateData);
+    return this.reminderRepo.save(reminder);
   }
 
   findAll(userId: string): Promise<Reminder[]> {

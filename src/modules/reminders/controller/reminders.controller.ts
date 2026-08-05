@@ -12,12 +12,21 @@ import {
   Body,
 } from '@nestjs/common';
 
-//express imports
 import { Request } from 'express';
+
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiExtraModels,
+} from '@nestjs/swagger';
 
 //dto imports
 import { CreateReminderDto } from '../dto/create-reminder.dto';
 import { UpdateReminderDto } from '../dto/update-reminder.dto';
+import { ReminderResponseDto } from '../dto/reminder-response.dto';
 
 // common imports
 import { Protected, TransformResponseInterceptor } from '@common/index';
@@ -25,12 +34,22 @@ import { Protected, TransformResponseInterceptor } from '@common/index';
 // service imports
 import { RemindersService } from '../service/reminders.service';
 
+@ApiTags('Reminders')
+@ApiBearerAuth()
+@ApiExtraModels(ReminderResponseDto)
 @Controller('reminders')
 @Protected()
 @UseInterceptors(TransformResponseInterceptor)
 export class RemindersController {
   constructor(private readonly reminderService: RemindersService) {}
 
+  @ApiOperation({ summary: 'List all reminders for the authenticated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminders retrieved successfully.',
+    type: [ReminderResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   @HttpCode(HttpStatus.OK)
   @Get()
   async getReminders(@Req() req: Request) {
@@ -41,46 +60,85 @@ export class RemindersController {
     };
   }
 
+  @ApiOperation({ summary: 'Get a single reminder by ID' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminder retrieved successfully.',
+    type: ReminderResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async getReminder(@Param('id') id: string, @Req() req: Request) {
     const reminder = await this.reminderService.getReminder(req.user.id, id);
     return {
-      message: 'Reminders retrieved successfully.',
+      message: 'Reminder retrieved successfully.',
       reminder,
     };
   }
 
+  @ApiOperation({ summary: 'Create a new reminder' })
+  @ApiResponse({
+    status: 201,
+    description: 'Reminder created successfully.',
+    type: ReminderResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async createReminder(
     @Body() reminderData: CreateReminderDto,
     @Req() req: Request,
   ) {
-    await this.reminderService.createReminder(req.user.id, reminderData);
+    const reminder = await this.reminderService.createReminder(
+      req.user.id,
+      reminderData,
+    );
     return {
-      message: 'Reminders created successfully.',
+      message: 'Reminder created successfully.',
+      reminder,
     };
   }
 
+  @ApiOperation({ summary: 'Delete all reminders for the authenticated user' })
+  @ApiResponse({ status: 204, description: 'Reminders deleted successfully.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('')
-  async deleteReminder(@Req() req: Request) {
+  @Delete()
+  async deleteReminders(@Req() req: Request) {
     await this.reminderService.deleteReminders(req.user.id);
     return {
-      message: 'Reminders retrieved successfully.',
+      message: 'Reminders deleted successfully.',
     };
   }
 
+  @ApiOperation({ summary: 'Delete a single reminder by ID' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({ status: 204, description: 'Reminder deleted successfully.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async deleteReminders(@Param('id') id: string, @Req() req: Request) {
+  async deleteReminder(@Param('id') id: string, @Req() req: Request) {
     await this.reminderService.deleteReminder(req.user.id, id);
     return {
-      message: 'Reminders retrieved successfully.',
+      message: 'Reminder deleted successfully.',
     };
   }
 
+  @ApiOperation({ summary: 'Update a reminder by ID' })
+  @ApiParam({ name: 'id', description: 'Reminder UUID', format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reminder updated successfully.',
+    type: ReminderResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
+  @ApiResponse({ status: 404, description: 'Reminder not found.' })
   @HttpCode(HttpStatus.OK)
   @Patch(':id')
   async updateReminder(
@@ -88,18 +146,18 @@ export class RemindersController {
     @Param('id') id: string,
     @Body() updateReminderData: UpdateReminderDto,
   ) {
-    await this.reminderService.updateReminder(
+    const reminder = await this.reminderService.updateReminder(
       req.user.id,
       id,
       updateReminderData,
     );
-
     return {
       message: 'Reminder updated successfully.',
+      reminder,
     };
   }
 
-  @Patch(':id')
+  @Patch(':id/reschedule')
   rescheduleReminder() {
     this.reminderService.rescheduleReminder();
     return {
