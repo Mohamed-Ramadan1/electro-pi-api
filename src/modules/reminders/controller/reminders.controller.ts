@@ -5,9 +5,18 @@ import {
   Delete,
   Patch,
   HttpCode,
+  Req,
   HttpStatus,
   UseInterceptors,
+  Param,
+  Body,
 } from '@nestjs/common';
+
+//express imports
+import { Request } from 'express';
+
+//dto imports
+import { CreateReminderDto } from '../dto/create-reminder.dto';
 
 // common imports
 import { Protected, TransformResponseInterceptor } from '@common/index';
@@ -23,26 +32,40 @@ export class RemindersController {
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  getReminders() {
-    this.reminderService.getReminders();
+  async getReminders(@Req() req: Request) {
+    const reminders = await this.reminderService.getReminders(req.user.id);
     return {
       message: 'Reminders retrieved successfully.',
+      reminders,
     };
   }
 
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getReminder() {
-    this.reminderService.getReminder();
+  async getReminder(@Param('id') id: string, @Req() req: Request) {
+    const reminder = await this.reminderService.getReminder(req.user.id, id);
     return {
       message: 'Reminders retrieved successfully.',
+      reminder,
     };
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  createReminder() {
-    this.reminderService.createReminder();
+  async createReminder(
+    @Body() reminderData: CreateReminderDto,
+    @Req() req: Request,
+  ) {
+    await this.reminderService.createReminder(req.user.id, reminderData);
+    return {
+      message: 'Reminders created successfully.',
+    };
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('')
+  async deleteReminder(@Req() req: Request) {
+    await this.reminderService.deleteReminders(req.user.id);
     return {
       message: 'Reminders retrieved successfully.',
     };
@@ -50,8 +73,8 @@ export class RemindersController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  deleteReminder() {
-    this.reminderService.deleteReminders();
+  async deleteReminders(@Param('id') id: string, @Req() req: Request) {
+    await this.reminderService.deleteReminder(req.user.id, id);
     return {
       message: 'Reminders retrieved successfully.',
     };
