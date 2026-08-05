@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 import { Reminder } from '../entity/reminder.entity';
 import { CreateReminderDto } from '../dto/create-reminder.dto';
+import { UpdateReminderDto } from '../dto/update-reminder.dto';
 
 @Injectable()
 export class ReminderRepository {
@@ -18,6 +19,17 @@ export class ReminderRepository {
       user: { id: userId },
     });
     return this.reminderRepo.save(reminder);
+  }
+
+  update(
+    userId: string,
+    reminderId: string,
+    updateData: UpdateReminderDto,
+  ): Promise<UpdateResult> {
+    return this.reminderRepo.update(
+      { user: { id: userId }, id: reminderId },
+      { ...updateData },
+    );
   }
 
   findAll(userId: string): Promise<Reminder[]> {

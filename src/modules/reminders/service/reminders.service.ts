@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DeleteResult } from 'typeorm';
 
 // Repository import
 import { ReminderRepository } from '../repo/reminders.repo';
 
 // entity imports
 import { Reminder } from '../entity/reminder.entity';
-import { DeleteResult } from 'typeorm';
+
+// dto imports.
 import { CreateReminderDto } from '../dto/create-reminder.dto';
+import { UpdateReminderDto } from '../dto/update-reminder.dto';
 
 @Injectable()
 export class RemindersService {
@@ -35,7 +38,20 @@ export class RemindersService {
     return this.reminderRepo.deleteById(userId, reminderId);
   }
 
-  updateReminder() {}
+  async updateReminder(
+    userId: string,
+    reminderId: string,
+    updateReminderData: UpdateReminderDto,
+  ): Promise<void> {
+    const result = await this.reminderRepo.update(
+      userId,
+      reminderId,
+      updateReminderData,
+    );
+    if (result.affected === 0) {
+      throw new NotFoundException('Reminder not found.');
+    }
+  }
 
   rescheduleReminder() {}
 

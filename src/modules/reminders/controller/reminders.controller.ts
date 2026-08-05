@@ -17,6 +17,7 @@ import { Request } from 'express';
 
 //dto imports
 import { CreateReminderDto } from '../dto/create-reminder.dto';
+import { UpdateReminderDto } from '../dto/update-reminder.dto';
 
 // common imports
 import { Protected, TransformResponseInterceptor } from '@common/index';
@@ -82,10 +83,19 @@ export class RemindersController {
 
   @HttpCode(HttpStatus.OK)
   @Patch(':id')
-  updateReminder() {
-    this.reminderService.updateReminder();
+  async updateReminder(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateReminderData: UpdateReminderDto,
+  ) {
+    await this.reminderService.updateReminder(
+      req.user.id,
+      id,
+      updateReminderData,
+    );
+
     return {
-      message: 'Reminders retrieved successfully.',
+      message: 'Reminder updated successfully.',
     };
   }
 
