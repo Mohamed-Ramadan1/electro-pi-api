@@ -12,29 +12,31 @@
     manage accoutns
     and interactions
 
-## Teams
+    Profile not complete.
 
-## Work-zone
+## In Progress
 
-## Events
+### Reminders
 
-## Reminders
+### Teams
 
-## Assistants
+### Work-zone
 
-## Team
+### Events
 
-## profile
+### Assistants
 
-## Support
+### Team
 
-## messaging
+### Support
 
-## Projects
+### messaging
 
-## Payments
+### Projects
 
-## Notifications
+### Payments
+
+### Notifications
 
     basic in app ones
 

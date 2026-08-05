@@ -76,33 +76,33 @@
 
 ### Database & Caching
 
-| Package   | Purpose                       |
-| --------- | ----------------------------- |
-| `typeorm` | ORM for database operations   |
-| `pg`      | PostgreSQL driver             |
+| Package   | Purpose                     |
+| --------- | --------------------------- |
+| `typeorm` | ORM for database operations |
+| `pg`      | PostgreSQL driver           |
 
 ### Security
 
-| Package       | Purpose                 |
-| ------------- | ----------------------- |
-| `bcrypt`      | Password hashing        |
-| `passport`    | Authentication framework |
-| `passport-jwt`| JWT strategy            |
-| `helmet`      | HTTP security headers   |
-| `cookie-parser`| Cookie parsing         |
+| Package         | Purpose                  |
+| --------------- | ------------------------ |
+| `bcrypt`        | Password hashing         |
+| `passport`      | Authentication framework |
+| `passport-jwt`  | JWT strategy             |
+| `helmet`        | HTTP security headers    |
+| `cookie-parser` | Cookie parsing           |
 
 ### Storage & Cloud
 
-| Package              | Purpose                    |
-| -------------------- | -------------------------- |
-| `@aws-sdk/client-s3` | AWS S3 client SDK          |
-| `@aws-sdk/lib-storage`| Multipart S3 uploads       |
+| Package                | Purpose              |
+| ---------------------- | -------------------- |
+| `@aws-sdk/client-s3`   | AWS S3 client SDK    |
+| `@aws-sdk/lib-storage` | Multipart S3 uploads |
 
 ### Upload
 
-| Package | Purpose               |
-| ------- | --------------------- |
-| `multer` | File upload handling  |
+| Package  | Purpose              |
+| -------- | -------------------- |
+| `multer` | File upload handling |
 
 ### Validation & Transformation
 
@@ -113,15 +113,15 @@
 
 ### Development Tools
 
-| Package       | Purpose                     |
-| ------------- | --------------------------- |
-| `@nestjs/cli` | NestJS project scaffolding  |
-| `@swc/core`   | Fast TypeScript compilation |
-| `eslint` (9.x)| Linting (flat config)       |
-| `prettier`    | Code formatting             |
-| `jest`        | Test runner                 |
-| `ts-jest`     | TypeScript transform for Jest|
-| `supertest`   | HTTP assertion for e2e tests|
+| Package        | Purpose                       |
+| -------------- | ----------------------------- |
+| `@nestjs/cli`  | NestJS project scaffolding    |
+| `@swc/core`    | Fast TypeScript compilation   |
+| `eslint` (9.x) | Linting (flat config)         |
+| `prettier`     | Code formatting               |
+| `jest`         | Test runner                   |
+| `ts-jest`      | TypeScript transform for Jest |
+| `supertest`    | HTTP assertion for e2e tests  |
 
 ---
 
@@ -366,18 +366,20 @@ The **Core Layer** provides process-wide, cross-cutting configuration.
 ### 5.1 `CoreModule` (`core.module.ts`)
 
 #### ConfigModule
+
 - **Global**: Available to all modules without importing.
 - **Cached**: Prevents repeated file reads.
 - **Environment File**: Loads from `.env`.
 
 #### ThrottlerModule
+
 Three named rate limiters:
 
-| Name      | Window   | Limit | Use Case               |
-| --------- | -------- | ----- | ---------------------- |
-| `default` | 1 min    | 60    | General API requests   |
-| `strict`  | 1 min    | 10    | Sensitive endpoints    |
-| `auth`    | 15 min   | 35    | Login / register       |
+| Name      | Window | Limit | Use Case             |
+| --------- | ------ | ----- | -------------------- |
+| `default` | 1 min  | 60    | General API requests |
+| `strict`  | 1 min  | 10    | Sensitive endpoints  |
+| `auth`    | 15 min | 35    | Login / register     |
 
 #### Global Providers
 
@@ -409,10 +411,10 @@ Three named rate limiters:
 
 ### 5.4 Environment Utilities (`utils/env.utils.ts`)
 
-| Function    | Description                            |
-| ----------- | -------------------------------------- |
-| `toNumber()`| Parse numeric env var with fallback    |
-| `toBoolean()`| Parse `"true"/"1"/true` with fallback |
+| Function      | Description                           |
+| ------------- | ------------------------------------- |
+| `toNumber()`  | Parse numeric env var with fallback   |
+| `toBoolean()` | Parse `"true"/"1"/true` with fallback |
 
 ---
 
@@ -422,15 +424,16 @@ The **Common Layer** contains reusable artifacts used by all modules.
 
 ### 6.1 Decorators
 
-| Decorator     | Purpose                                   |
-| ------------- | ----------------------------------------- |
-| `@Protected()`| Marks route as requiring authentication   |
-| `@Public()`   | Marks route as public (no auth required)  |
-| `@Roles(...)` | Restricts route to specific roles         |
+| Decorator      | Purpose                                  |
+| -------------- | ---------------------------------------- |
+| `@Protected()` | Marks route as requiring authentication  |
+| `@Public()`    | Marks route as public (no auth required) |
+| `@Roles(...)`  | Restricts route to specific roles        |
 
 ### 6.2 Guards
 
 #### `AuthGuard`
+
 - Registered as global `APP_GUARD` in `AuthModule`.
 - Checks for `@Protected()` metadata on route/controller.
 - Extracts Bearer token from `Authorization` header.
@@ -438,6 +441,7 @@ The **Common Layer** contains reusable artifacts used by all modules.
 - Loads user from database and attaches to `request.user`.
 
 #### `RolesGuard`
+
 - Reads `@Roles()` metadata.
 - Checks `request.user.roles` against required roles.
 - Throws `ForbiddenException` on mismatch.
@@ -446,7 +450,9 @@ The **Common Layer** contains reusable artifacts used by all modules.
 ### 6.3 Interceptors
 
 #### `TransformResponseInterceptor`
+
 Wraps all responses in:
+
 ```json
 {
   "message": "Operation completed successfully",
@@ -457,6 +463,7 @@ Wraps all responses in:
 ### 6.4 Global Exception Filter (`filters/http-exception.filter.ts`)
 
 Catches **every** exception. Response shape:
+
 ```json
 {
   "success": false,
@@ -472,8 +479,8 @@ Catches **every** exception. Response shape:
 ### 6.5 Constants (`constants/roles.constants.ts`)
 
 ```typescript
-UserRoles = { MEMBER: 'member', ADMIN: 'admin' }
-DEFAULT_ROLE = 'member'
+UserRoles = { MEMBER: 'member', ADMIN: 'admin' };
+DEFAULT_ROLE = 'member';
 ```
 
 ---
@@ -495,6 +502,7 @@ The **Infrastructure Layer** isolates technical adapters from business logic.
 | `DATABASE_PASSWORD` | `123456`            |
 
 #### Behavior
+
 - `synchronize: true` in **development only** (auto-creates tables).
 - `autoLoadEntities: true` (entities auto-discovered).
 - `logging: true` in **development only** (SQL queries logged).
@@ -504,22 +512,22 @@ The **Infrastructure Layer** isolates technical adapters from business logic.
 
 Dual-token authentication system:
 
-| Token   | Default TTL | Secret Env          |
-| ------- | ----------- | ------------------- |
-| Access  | `15m`       | `JWT_ACCESS_SECRET` |
-| Refresh | `7d`        | `JWT_REFRESH_SECRET`|
+| Token   | Default TTL | Secret Env           |
+| ------- | ----------- | -------------------- |
+| Access  | `15m`       | `JWT_ACCESS_SECRET`  |
+| Refresh | `7d`        | `JWT_REFRESH_SECRET` |
 
 #### `TokenService` Operations
 
-| Method                        | Description                                    |
-| ----------------------------- | ---------------------------------------------- |
-| `issueAccessToken(payload)`   | Signs access token with type claim             |
-| `issueRefreshToken(payload)`  | Signs refresh token with jti + type claim      |
-| `issueTokenPair(payload)`     | Returns access + refresh + expiresIn           |
-| `verifyAccessToken(token)`    | Validates audience, issuer, secret, and type   |
-| `verifyRefreshToken(token)`   | Same but with refresh secret                   |
-| `decode(token)`               | Decode without verification                    |
-| `getAccessExpiresInSeconds()` | Converts TTL string to seconds                 |
+| Method                        | Description                                  |
+| ----------------------------- | -------------------------------------------- |
+| `issueAccessToken(payload)`   | Signs access token with type claim           |
+| `issueRefreshToken(payload)`  | Signs refresh token with jti + type claim    |
+| `issueTokenPair(payload)`     | Returns access + refresh + expiresIn         |
+| `verifyAccessToken(token)`    | Validates audience, issuer, secret, and type |
+| `verifyRefreshToken(token)`   | Same but with refresh secret                 |
+| `decode(token)`               | Decode without verification                  |
+| `getAccessExpiresInSeconds()` | Converts TTL string to seconds               |
 
 **Token Type Protection**: `verifyAccessToken()` rejects refresh tokens (checks `payload.type`).
 
@@ -527,10 +535,10 @@ Dual-token authentication system:
 
 Wraps `bcrypt` with 10 salt rounds (`BCRYPT_SALT_ROUNDS = 10`).
 
-| Method          | Description                              |
-| --------------- | ---------------------------------------- |
-| `hash(plain)`   | Hash plaintext with bcrypt + salt        |
-| `verify(plain, hashed)` | Constant-time comparison         |
+| Method                  | Description                       |
+| ----------------------- | --------------------------------- |
+| `hash(plain)`           | Hash plaintext with bcrypt + salt |
+| `verify(plain, hashed)` | Constant-time comparison          |
 
 ### 7.4 Upload Module (`upload/`)
 
@@ -538,10 +546,10 @@ AWS S3 file storage with **automatic local disk fallback**.
 
 #### `UploaderService`
 
-| Method              | Description                                    |
-| ------------------- | ---------------------------------------------- |
+| Method                         | Description                                             |
+| ------------------------------ | ------------------------------------------------------- |
 | `uploadResource(file, folder)` | Attempts S3 upload; falls back to `./uploads/{folder}/` |
-| `deleteResource(key)` | Deletes from S3 or local disk based on key prefix |
+| `deleteResource(key)`          | Deletes from S3 or local disk based on key prefix       |
 
 **Local fallback behavior**: When S3 fails (IAM policy, network), files save to `./uploads/{folder}/` and return local URLs (`/uploads/{folder}/...`). Files are served statically via `app.useStaticAssets()`.
 
@@ -549,16 +557,16 @@ AWS S3 file storage with **automatic local disk fallback**.
 
 #### Configuration
 
-| Variable              | Default   | Description                 |
-| --------------------- | --------- | --------------------------- |
-| `AWS_REGION`          | `us-east-1`| AWS region                 |
-| `AWS_ACCESS_KEY_ID`   | —         | AWS access key              |
-| `AWS_SECRET_ACCESS_KEY`| —        | AWS secret key              |
-| `S3_BUCKET_NAME`      | —         | Target bucket               |
-| `S3_ENDPOINT`         | —         | Custom endpoint (MinIO)     |
-| `S3_FORCE_PATH_STYLE` | `false`   | Path-style addressing       |
-| `S3_PUBLIC_BASE_URL`  | —         | CDN / public URL base       |
-| `S3_KEY_PREFIX`       | `uploads` | Object key prefix           |
+| Variable                | Default     | Description             |
+| ----------------------- | ----------- | ----------------------- |
+| `AWS_REGION`            | `us-east-1` | AWS region              |
+| `AWS_ACCESS_KEY_ID`     | —           | AWS access key          |
+| `AWS_SECRET_ACCESS_KEY` | —           | AWS secret key          |
+| `S3_BUCKET_NAME`        | —           | Target bucket           |
+| `S3_ENDPOINT`           | —           | Custom endpoint (MinIO) |
+| `S3_FORCE_PATH_STYLE`   | `false`     | Path-style addressing   |
+| `S3_PUBLIC_BASE_URL`    | —           | CDN / public URL base   |
+| `S3_KEY_PREFIX`         | `uploads`   | Object key prefix       |
 
 ---
 
@@ -570,12 +578,13 @@ AWS S3 file storage with **automatic local disk fallback**.
 
 #### Endpoints
 
-| Method | Route              | Auth     | Description                    |
-| ------ | ------------------ | -------- | ------------------------------ |
+| Method | Route                   | Auth   | Description                     |
+| ------ | ----------------------- | ------ | ------------------------------- |
 | `POST` | `/api/v1/auth/register` | Public | Register new user (member role) |
-| `POST` | `/api/v1/auth/login`    | Public | Login with email + password   |
+| `POST` | `/api/v1/auth/login`    | Public | Login with email + password     |
 
 #### Flow
+
 ```
 1. Register/Login
 2. → Password hashed/verified (bcrypt, 10 rounds)
@@ -596,38 +605,38 @@ AWS S3 file storage with **automatic local disk fallback**.
 
 #### User Entity (`entity/user.entity.ts`)
 
-| Column          | Type              | Notes                                   |
-| --------------- | ----------------- | --------------------------------------- |
-| `id`            | `uuid`            | Primary key, auto-generated             |
-| `name`          | `varchar(100)`    | Display name                            |
-| `email`         | `varchar(255)`    | Unique, login identifier                |
-| `passwordHash`  | `varchar(255)`    | `select: false` — hidden from queries   |
-| `isActive`      | `boolean`         | Soft disable, indexed, default `true`   |
-| `roles`         | `enum[]`          | Postgres enum array: `admin` / `member` |
-| `profileImage`  | `varchar`         | Nullable, profile picture URL           |
-| `createdAt`     | `timestamp`       | Auto-set on insert                      |
-| `updatedAt`     | `timestamp`       | Auto-set on update                      |
-| `termsAcceptedAt`| `timestamp`      | Nullable                                |
-| `termsVersion`  | `varchar(20)`     | Nullable                                |
+| Column            | Type           | Notes                                   |
+| ----------------- | -------------- | --------------------------------------- |
+| `id`              | `uuid`         | Primary key, auto-generated             |
+| `name`            | `varchar(100)` | Display name                            |
+| `email`           | `varchar(255)` | Unique, login identifier                |
+| `passwordHash`    | `varchar(255)` | `select: false` — hidden from queries   |
+| `isActive`        | `boolean`      | Soft disable, indexed, default `true`   |
+| `roles`           | `enum[]`       | Postgres enum array: `admin` / `member` |
+| `profileImage`    | `varchar`      | Nullable, profile picture URL           |
+| `createdAt`       | `timestamp`    | Auto-set on insert                      |
+| `updatedAt`       | `timestamp`    | Auto-set on update                      |
+| `termsAcceptedAt` | `timestamp`    | Nullable                                |
+| `termsVersion`    | `varchar(20)`  | Nullable                                |
 
 #### Admin Endpoints (`UserController`, `/api/v1/users`)
 
-| Method  | Route                      | Auth  | Description           |
-| ------- | -------------------------- | ----- | --------------------- |
-| `GET`   | `/users`                   | Admin | List all users        |
-| `GET`   | `/users/:id`               | Admin | Get user by ID        |
-| `POST`  | `/users`                   | Admin | Create user           |
-| `DELETE`| `/users/:id`               | Admin | Delete user           |
-| `PATCH` | `/users/:id/activate`      | Admin | Activate user         |
-| `PATCH` | `/users/:id/deactivate`    | Admin | Deactivate user       |
+| Method   | Route                   | Auth  | Description     |
+| -------- | ----------------------- | ----- | --------------- |
+| `GET`    | `/users`                | Admin | List all users  |
+| `GET`    | `/users/:id`            | Admin | Get user by ID  |
+| `POST`   | `/users`                | Admin | Create user     |
+| `DELETE` | `/users/:id`            | Admin | Delete user     |
+| `PATCH`  | `/users/:id/activate`   | Admin | Activate user   |
+| `PATCH`  | `/users/:id/deactivate` | Admin | Deactivate user |
 
 #### Member Endpoints (`MembersController`, `/api/v1/users/members`)
 
-| Method  | Route                      | Auth   | Description                   |
-| ------- | -------------------------- | ------ | ----------------------------- |
-| `GET`   | `/users/members/me`        | Any    | Get current user profile      |
-| `POST`  | `/users/members/me/profile-image`   | Any | Upload profile image    |
-| `DELETE`| `/users/members/me/profile-image`   | Any | Remove profile image    |
+| Method   | Route                             | Auth | Description              |
+| -------- | --------------------------------- | ---- | ------------------------ |
+| `GET`    | `/users/members/me`               | Any  | Get current user profile |
+| `POST`   | `/users/members/me/profile-image` | Any  | Upload profile image     |
+| `DELETE` | `/users/members/me/profile-image` | Any  | Remove profile image     |
 
 ### 8.3 Projects Module (`modules/projects/`)
 
@@ -635,28 +644,28 @@ AWS S3 file storage with **automatic local disk fallback**.
 
 #### Project Entity (`entity/project.entity.ts`)
 
-| Column         | Type           | Notes                              |
-| -------------- | -------------- | ---------------------------------- |
-| `id`           | `uuid`         | Primary key                        |
-| `name`         | `varchar(150)` | Unique project name                |
-| `description`  | `text`         | Nullable                           |
-| `createdIn`    | `varchar(255)` | Nullable                           |
-| `projectStatus`| `enum`         | `open` / `closed`, default: `open` |
-| `isActive`     | `boolean`      | Default: `true`                    |
-| `projectImage` | `varchar`      | Nullable, cover image URL          |
-| `creator`      | `ManyToOne→User`| Project creator                   |
-| `members`      | `ManyToMany→User`| Join table: `project_members`     |
+| Column          | Type              | Notes                              |
+| --------------- | ----------------- | ---------------------------------- |
+| `id`            | `uuid`            | Primary key                        |
+| `name`          | `varchar(150)`    | Unique project name                |
+| `description`   | `text`            | Nullable                           |
+| `createdIn`     | `varchar(255)`    | Nullable                           |
+| `projectStatus` | `enum`            | `open` / `closed`, default: `open` |
+| `isActive`      | `boolean`         | Default: `true`                    |
+| `projectImage`  | `varchar`         | Nullable, cover image URL          |
+| `creator`       | `ManyToOne→User`  | Project creator                    |
+| `members`       | `ManyToMany→User` | Join table: `project_members`      |
 
 #### Admin Endpoints (`ProjectsController`, `/api/v1/projects`)
 
-| Method   | Route                           | Description              |
-| -------- | ------------------------------- | ------------------------ |
+| Method   | Route                           | Description                |
+| -------- | ------------------------------- | -------------------------- |
 | `POST`   | `/projects`                     | Create project (multipart) |
-| `DELETE` | `/projects/:id`                 | Delete project           |
-| `POST`   | `/projects/:id/members/:userId` | Add member to project    |
+| `DELETE` | `/projects/:id`                 | Delete project             |
+| `POST`   | `/projects/:id/members/:userId` | Add member to project      |
 | `DELETE` | `/projects/:id/members/:userId` | Remove member from project |
-| `PATCH`  | `/projects/:id/close`           | Close project            |
-| `PATCH`  | `/projects/:id/reopen`          | Reopen project           |
+| `PATCH`  | `/projects/:id/close`           | Close project              |
+| `PATCH`  | `/projects/:id/reopen`          | Reopen project             |
 
 #### Member Endpoints (`ProjectsMembersController`, `/api/v1/members`)
 
@@ -666,6 +675,7 @@ AWS S3 file storage with **automatic local disk fallback**.
 | `GET`  | `/members/:id` | Get single project (if has access)   |
 
 #### Access Control
+
 - `findByUser()`: matches `creator.id` OR exists in `members` array.
 - Project images: uploaded via S3 (with local fallback), `projectImage` set to `null` if upload fails.
 - Duplicate project names rejected with `409 Conflict`.
@@ -676,63 +686,63 @@ AWS S3 file storage with **automatic local disk fallback**.
 
 #### Task Entity (`entity/task.entity.ts`)
 
-| Column        | Type              | Notes                                |
-| ------------- | ----------------- | ------------------------------------ |
-| `id`          | `uuid`            | Primary key                          |
-| `title`       | `varchar(200)`    | Task title                           |
-| `description` | `text`            | Nullable                             |
-| `status`      | `enum`            | `todo` / `inprogress` / `done`       |
-| `priority`    | `enum`            | `low` / `medium` / `high`            |
-| `dueDate`     | `timestamp`       | Nullable                             |
-| `completedAt` | `timestamp`       | Auto-set when status → `done`; cleared on revert |
-| `project`     | `ManyToOne→Project`| Cascade delete                      |
-| `creator`     | `ManyToOne→User`  | Task creator                         |
-| `assignee`    | `ManyToOne→User`  | Nullable assigned user               |
-| `images`      | `OneToMany→TaskImage`| Cascade, up to 10 per upload       |
+| Column        | Type                  | Notes                                            |
+| ------------- | --------------------- | ------------------------------------------------ |
+| `id`          | `uuid`                | Primary key                                      |
+| `title`       | `varchar(200)`        | Task title                                       |
+| `description` | `text`                | Nullable                                         |
+| `status`      | `enum`                | `todo` / `inprogress` / `done`                   |
+| `priority`    | `enum`                | `low` / `medium` / `high`                        |
+| `dueDate`     | `timestamp`           | Nullable                                         |
+| `completedAt` | `timestamp`           | Auto-set when status → `done`; cleared on revert |
+| `project`     | `ManyToOne→Project`   | Cascade delete                                   |
+| `creator`     | `ManyToOne→User`      | Task creator                                     |
+| `assignee`    | `ManyToOne→User`      | Nullable assigned user                           |
+| `images`      | `OneToMany→TaskImage` | Cascade, up to 10 per upload                     |
 
 #### TaskImage Entity (`entity/task-image.entity.ts`)
 
-| Column    | Type           | Notes              |
-| --------- | -------------- | ------------------ |
-| `id`      | `uuid`         | Primary key        |
-| `key`     | `varchar(500)` | S3 key or local path |
-| `url`     | `varchar(2000)`| Public URL         |
-| `order`   | `int`          | Display order      |
-| `task`    | `ManyToOne→Task`| Cascade delete    |
+| Column  | Type             | Notes                |
+| ------- | ---------------- | -------------------- |
+| `id`    | `uuid`           | Primary key          |
+| `key`   | `varchar(500)`   | S3 key or local path |
+| `url`   | `varchar(2000)`  | Public URL           |
+| `order` | `int`            | Display order        |
+| `task`  | `ManyToOne→Task` | Cascade delete       |
 
 #### Admin Endpoints (`TasksController`, `/api/v1/tasks`)
 
-| Method   | Route                          | Description                          |
-| -------- | ------------------------------ | ------------------------------------ |
-| `POST`   | `/tasks`                       | Create task (multipart, files[])     |
-| `GET`    | `/tasks`                       | List all tasks (user's tasks)        |
-| `GET`    | `/tasks/:id`                   | Get task by ID (any user)            |
-| `GET`    | `/tasks/project/:projectId`    | Get tasks by project                 |
-| `PATCH`  | `/tasks/:id`                   | Update task (multipart)              |
-| `PATCH`  | `/tasks/:id/assign/:userId`    | Assign task to user                  |
-| `DELETE` | `/tasks/:id/assign`            | Unassign task                        |
-| `DELETE` | `/tasks/:id`                   | Delete task + cleanup images         |
+| Method   | Route                       | Description                      |
+| -------- | --------------------------- | -------------------------------- |
+| `POST`   | `/tasks`                    | Create task (multipart, files[]) |
+| `GET`    | `/tasks`                    | List all tasks (user's tasks)    |
+| `GET`    | `/tasks/:id`                | Get task by ID (any user)        |
+| `GET`    | `/tasks/project/:projectId` | Get tasks by project             |
+| `PATCH`  | `/tasks/:id`                | Update task (multipart)          |
+| `PATCH`  | `/tasks/:id/assign/:userId` | Assign task to user              |
+| `DELETE` | `/tasks/:id/assign`         | Unassign task                    |
+| `DELETE` | `/tasks/:id`                | Delete task + cleanup images     |
 
 #### Member Endpoints (`TasksMembersController`, `/api/v1/members/tasks`)
 
-| Method  | Route                            | Description                        |
-| ------- | -------------------------------- | ---------------------------------- |
-| `GET`   | `/members/tasks`                 | List my tasks (creator or assignee) |
-| `GET`   | `/members/tasks/:id`             | Get task by ID                     |
-| `GET`   | `/members/tasks/project/:projectId` | Get tasks by project            |
-| `PATCH` | `/members/tasks/:id/status`      | Update task status (assignee or project member) |
+| Method  | Route                               | Description                                     |
+| ------- | ----------------------------------- | ----------------------------------------------- |
+| `GET`   | `/members/tasks`                    | List my tasks (creator or assignee)             |
+| `GET`   | `/members/tasks/:id`                | Get task by ID                                  |
+| `GET`   | `/members/tasks/project/:projectId` | Get tasks by project                            |
+| `PATCH` | `/members/tasks/:id/status`         | Update task status (assignee or project member) |
 
 #### Access Control & Validation
 
-| Rule                      | Enforcement                                       |
-| ------------------------- | ------------------------------------------------- |
-| Create task               | User must be project creator or member             |
-| Assign task               | Assignee must be project member                    |
-| Unassign task             | User must be project member                        |
-| Update/Delete task        | User must be project member                        |
-| Update status (member)    | Must be task assignee OR project member            |
-| Revert from `done`        | Clears `completedAt` to `null`                     |
-| View task                 | Any authenticated user (no restriction)            |
+| Rule                   | Enforcement                             |
+| ---------------------- | --------------------------------------- |
+| Create task            | User must be project creator or member  |
+| Assign task            | Assignee must be project member         |
+| Unassign task          | User must be project member             |
+| Update/Delete task     | User must be project member             |
+| Update status (member) | Must be task assignee OR project member |
+| Revert from `done`     | Clears `completedAt` to `null`          |
+| View task              | Any authenticated user (no restriction) |
 
 ---
 
@@ -742,54 +752,54 @@ All routes prefixed with `/api/v1/`.
 
 ### Auth
 
-| Method | Route              | Auth   | Description   |
-| ------ | ------------------ | ------ | ------------- |
-| `POST` | `/auth/register`   | Public | Register      |
-| `POST` | `/auth/login`      | Public | Login         |
+| Method | Route            | Auth   | Description |
+| ------ | ---------------- | ------ | ----------- |
+| `POST` | `/auth/register` | Public | Register    |
+| `POST` | `/auth/login`    | Public | Login       |
 
 ### Users
 
-| Method   | Route                           | Auth  | Description            |
-| -------- | ------------------------------- | ----- | ---------------------- |
-| `GET`    | `/users`                        | Admin | List users             |
-| `GET`    | `/users/:id`                    | Admin | Get user               |
-| `POST`   | `/users`                        | Admin | Create user            |
-| `DELETE` | `/users/:id`                    | Admin | Delete user            |
-| `PATCH`  | `/users/:id/activate`           | Admin | Activate user          |
-| `PATCH`  | `/users/:id/deactivate`         | Admin | Deactivate user        |
-| `GET`    | `/users/members/me`             | Any   | Get profile            |
-| `POST`   | `/users/members/me/profile-image`| Any  | Upload profile image   |
-| `DELETE` | `/users/members/me/profile-image`| Any  | Remove profile image   |
+| Method   | Route                             | Auth  | Description          |
+| -------- | --------------------------------- | ----- | -------------------- |
+| `GET`    | `/users`                          | Admin | List users           |
+| `GET`    | `/users/:id`                      | Admin | Get user             |
+| `POST`   | `/users`                          | Admin | Create user          |
+| `DELETE` | `/users/:id`                      | Admin | Delete user          |
+| `PATCH`  | `/users/:id/activate`             | Admin | Activate user        |
+| `PATCH`  | `/users/:id/deactivate`           | Admin | Deactivate user      |
+| `GET`    | `/users/members/me`               | Any   | Get profile          |
+| `POST`   | `/users/members/me/profile-image` | Any   | Upload profile image |
+| `DELETE` | `/users/members/me/profile-image` | Any   | Remove profile image |
 
 ### Projects
 
-| Method   | Route                           | Auth  | Description           |
-| -------- | ------------------------------- | ----- | --------------------- |
-| `POST`   | `/projects`                     | Admin | Create project        |
-| `DELETE` | `/projects/:id`                 | Admin | Delete project        |
-| `POST`   | `/projects/:id/members/:userId` | Admin | Add member            |
-| `DELETE` | `/projects/:id/members/:userId` | Admin | Remove member         |
-| `PATCH`  | `/projects/:id/close`           | Admin | Close project         |
-| `PATCH`  | `/projects/:id/reopen`          | Admin | Reopen project        |
-| `GET`    | `/members`                      | Any   | List my projects      |
-| `GET`    | `/members/:id`                  | Any   | Get project (if access)|
+| Method   | Route                           | Auth  | Description             |
+| -------- | ------------------------------- | ----- | ----------------------- |
+| `POST`   | `/projects`                     | Admin | Create project          |
+| `DELETE` | `/projects/:id`                 | Admin | Delete project          |
+| `POST`   | `/projects/:id/members/:userId` | Admin | Add member              |
+| `DELETE` | `/projects/:id/members/:userId` | Admin | Remove member           |
+| `PATCH`  | `/projects/:id/close`           | Admin | Close project           |
+| `PATCH`  | `/projects/:id/reopen`          | Admin | Reopen project          |
+| `GET`    | `/members`                      | Any   | List my projects        |
+| `GET`    | `/members/:id`                  | Any   | Get project (if access) |
 
 ### Tasks
 
-| Method   | Route                                | Auth  | Description              |
-| -------- | ------------------------------------ | ----- | ------------------------ |
-| `POST`   | `/tasks`                             | Admin | Create task              |
-| `GET`    | `/tasks`                             | Admin | List tasks               |
-| `GET`    | `/tasks/:id`                         | Admin | Get task                 |
-| `GET`    | `/tasks/project/:projectId`          | Admin | Tasks by project         |
-| `PATCH`  | `/tasks/:id`                         | Admin | Update task              |
-| `PATCH`  | `/tasks/:id/assign/:userId`          | Admin | Assign user              |
-| `DELETE` | `/tasks/:id/assign`                  | Admin | Unassign task            |
-| `DELETE` | `/tasks/:id`                         | Admin | Delete task              |
-| `GET`    | `/members/tasks`                     | Any   | List my tasks            |
-| `GET`    | `/members/tasks/:id`                 | Any   | Get task                 |
-| `GET`    | `/members/tasks/project/:projectId`  | Any   | Tasks by project         |
-| `PATCH`  | `/members/tasks/:id/status`          | Any   | Update status            |
+| Method   | Route                               | Auth  | Description      |
+| -------- | ----------------------------------- | ----- | ---------------- |
+| `POST`   | `/tasks`                            | Admin | Create task      |
+| `GET`    | `/tasks`                            | Admin | List tasks       |
+| `GET`    | `/tasks/:id`                        | Admin | Get task         |
+| `GET`    | `/tasks/project/:projectId`         | Admin | Tasks by project |
+| `PATCH`  | `/tasks/:id`                        | Admin | Update task      |
+| `PATCH`  | `/tasks/:id/assign/:userId`         | Admin | Assign user      |
+| `DELETE` | `/tasks/:id/assign`                 | Admin | Unassign task    |
+| `DELETE` | `/tasks/:id`                        | Admin | Delete task      |
+| `GET`    | `/members/tasks`                    | Any   | List my tasks    |
+| `GET`    | `/members/tasks/:id`                | Any   | Get task         |
+| `GET`    | `/members/tasks/project/:projectId` | Any   | Tasks by project |
+| `PATCH`  | `/members/tasks/:id/status`         | Any   | Update status    |
 
 ---
 
@@ -805,15 +815,15 @@ See [Section 18](#18-quick-reference--all-environment-variables).
 
 ### Key Defaults
 
-| Setting            | Development Default                                |
-| ------------------ | -------------------------------------------------- |
-| Port               | `3000`                                             |
-| Swagger            | Enabled (non-production)                           |
-| Database sync      | `true` (auto-sync in dev)                          |
-| Rate limit         | 60 req/min default, 10 req/min strict, 35/15min auth|
-| JWT access TTL     | `15m`                                              |
-| JWT refresh TTL    | `7d`                                               |
-| Bcrypt rounds      | `10`                                               |
+| Setting         | Development Default                                  |
+| --------------- | ---------------------------------------------------- |
+| Port            | `3000`                                               |
+| Swagger         | Enabled (non-production)                             |
+| Database sync   | `true` (auto-sync in dev)                            |
+| Rate limit      | 60 req/min default, 10 req/min strict, 35/15min auth |
+| JWT access TTL  | `15m`                                                |
+| JWT refresh TTL | `7d`                                                 |
+| Bcrypt rounds   | `10`                                                 |
 
 ---
 
@@ -833,6 +843,7 @@ See [Section 18](#18-quick-reference--all-environment-variables).
 ### JWT Token Structure
 
 **Access Token:**
+
 ```json
 {
   "sub": "user-uuid",
@@ -846,6 +857,7 @@ See [Section 18](#18-quick-reference--all-environment-variables).
 ```
 
 **Refresh Token:**
+
 ```json
 {
   "sub": "user-uuid",
@@ -861,15 +873,15 @@ See [Section 18](#18-quick-reference--all-environment-variables).
 
 ### Security Features
 
-| Feature                   | Implementation                                                    |
-| ------------------------- | ----------------------------------------------------------------- |
-| Token type validation     | `verifyAccessToken()` rejects refresh tokens                       |
-| Separate secrets          | Access and refresh use independent signing keys                    |
-| Token ID (jti)            | Each refresh token has a unique ID                                 |
-| Short-lived access        | 15-minute access tokens limit exposure                             |
-| Helmet                    | Security headers (CSP disabled for Swagger)                        |
-| CORS                      | Credentialed requests, all origins                                 |
-| Rate limiting             | 3 tiers: default (60/min), strict (10/min), auth (35/15min)        |
+| Feature               | Implementation                                              |
+| --------------------- | ----------------------------------------------------------- |
+| Token type validation | `verifyAccessToken()` rejects refresh tokens                |
+| Separate secrets      | Access and refresh use independent signing keys             |
+| Token ID (jti)        | Each refresh token has a unique ID                          |
+| Short-lived access    | 15-minute access tokens limit exposure                      |
+| Helmet                | Security headers (CSP disabled for Swagger)                 |
+| CORS                  | Credentialed requests, all origins                          |
+| Rate limiting         | 3 tiers: default (60/min), strict (10/min), auth (35/15min) |
 
 ---
 
@@ -975,6 +987,7 @@ Client
 ### Local Disk Fallback
 
 When S3 `PutObject` fails (IAM permission, network issue):
+
 - File saved to `./uploads/{folder}/timestamp-filename.ext`
 - URL returned as `/uploads/{folder}/...`
 - Served via `app.useStaticAssets(join(cwd, 'uploads'), { prefix: '/uploads' })`
@@ -982,13 +995,13 @@ When S3 `PutObject` fails (IAM permission, network issue):
 
 ### S3 Configuration
 
-| Variable              | Default   | Description                 |
-| --------------------- | --------- | --------------------------- |
-| `AWS_REGION`          | `us-east-1`| AWS region                 |
-| `AWS_ACCESS_KEY_ID`   | —         | AWS access key              |
-| `AWS_SECRET_ACCESS_KEY`| —        | AWS secret key              |
-| `S3_BUCKET_NAME`      | —         | Target bucket               |
-| `S3_KEY_PREFIX`       | `uploads` | Object key prefix           |
+| Variable                | Default     | Description       |
+| ----------------------- | ----------- | ----------------- |
+| `AWS_REGION`            | `us-east-1` | AWS region        |
+| `AWS_ACCESS_KEY_ID`     | —           | AWS access key    |
+| `AWS_SECRET_ACCESS_KEY` | —           | AWS secret key    |
+| `S3_BUCKET_NAME`        | —           | Target bucket     |
+| `S3_KEY_PREFIX`         | `uploads`   | Object key prefix |
 
 ---
 
@@ -1019,10 +1032,10 @@ HTTP Response
 
 ### HTTP Exception Mapping
 
-| Exception               | Status | Example Message                                           |
+| Exception               | Status | Example Message                                          |
 | ----------------------- | ------ | -------------------------------------------------------- |
-| `UnauthorizedException` | 401    | "Invalid email or password." / "No token provided"        |
-| `ForbiddenException`    | 403    | "You do not have access to modify tasks in this project"  |
+| `UnauthorizedException` | 401    | "Invalid email or password." / "No token provided"       |
+| `ForbiddenException`    | 403    | "You do not have access to modify tasks in this project" |
 | `NotFoundException`     | 404    | "Task not found" / "Project not found"                   |
 | `ConflictException`     | 409    | "A project with this name already exists"                |
 | `ValidationPipe`        | 400    | Array of validation error strings                        |
@@ -1033,11 +1046,11 @@ HTTP Response
 
 ### Rate Limiting Tiers
 
-| Tier      | Window  | Limit | Applied To              |
-| --------- | ------- | ----- | ----------------------- |
-| `default` | 1 min   | 60    | All general API routes  |
-| `strict`  | 1 min   | 10    | Sensitive endpoints     |
-| `auth`    | 15 min  | 35    | Login / register        |
+| Tier      | Window | Limit | Applied To             |
+| --------- | ------ | ----- | ---------------------- |
+| `default` | 1 min  | 60    | All general API routes |
+| `strict`  | 1 min  | 10    | Sensitive endpoints    |
+| `auth`    | 15 min | 35    | Login / register       |
 
 ### Security Headers (Helmet)
 
@@ -1071,11 +1084,13 @@ All standard security headers applied. CSP disabled for Swagger UI compatibility
 ### Visual Theme
 
 Custom dark theme:
+
 - Dark backgrounds (`#0b1120`, `#111827`, `#030712`)
 - Light text (`#e5e7eb`, `#f9fafb`)
 - Styled form inputs and code blocks
 
 ### Interactive Features
+
 - **Try it out**: Execute API calls from browser
 - **Request duration**: Shows how long each request took
 - **Persistent auth**: Token saved across page reloads
@@ -1088,10 +1103,12 @@ Custom dark theme:
 ### Docker
 
 **Multi-stage Dockerfile** (`node:22-alpine`):
+
 1. **Builder stage**: `npm ci` → `npm run build`
 2. **Release stage**: production deps only (`npm ci --omit=dev`), runs as `node` user
 
 **docker-compose.yml**:
+
 - `api`: Electro-Pi API container (port 3000)
 - `postgres`: PostgreSQL 16 Alpine with healthcheck
 - `redis`: Redis 7 Alpine with AOF persistence, 256MB max memory, LRU eviction
@@ -1137,63 +1154,63 @@ npm run test:cov
 
 ### Application
 
-| Variable         | Default        | Description                        |
-| ---------------- | -------------- | ---------------------------------- |
-| `NODE_ENV`       | `development`  | Environment                        |
-| `PORT`           | `3000`         | HTTP server port                   |
-| `ENABLE_SWAGGER` | `true` (non-prod)| Enable Swagger at `/docs`        |
+| Variable         | Default           | Description               |
+| ---------------- | ----------------- | ------------------------- |
+| `NODE_ENV`       | `development`     | Environment               |
+| `PORT`           | `3000`            | HTTP server port          |
+| `ENABLE_SWAGGER` | `true` (non-prod) | Enable Swagger at `/docs` |
 
 ### Database (PostgreSQL)
 
-| Variable            | Default             | Description       |
-| ------------------- | ------------------- | ----------------- |
-| `DATABASE_HOST`     | `localhost`         | PostgreSQL host   |
-| `DATABASE_PORT`     | `5432`              | PostgreSQL port   |
-| `DATABASE_NAME`     | `elector_pi_dev`    | Database name     |
-| `DATABASE_USER`     | `myuser`            | Database username |
-| `DATABASE_PASSWORD` | `123456`            | Database password |
+| Variable            | Default          | Description       |
+| ------------------- | ---------------- | ----------------- |
+| `DATABASE_HOST`     | `localhost`      | PostgreSQL host   |
+| `DATABASE_PORT`     | `5432`           | PostgreSQL port   |
+| `DATABASE_NAME`     | `elector_pi_dev` | Database name     |
+| `DATABASE_USER`     | `myuser`         | Database username |
+| `DATABASE_PASSWORD` | `123456`         | Database password |
 
 ### Redis
 
-| Variable          | Default     | Description           |
-| ----------------- | ----------- | --------------------- |
-| `REDIS_HOST`      | `localhost` | Redis host            |
-| `REDIS_PORT`      | `6379`      | Redis port            |
-| `REDIS_PASSWORD`  | `123456`    | Redis password        |
-| `REDIS_DB`        | `0`         | Redis database number |
-| `REDIS_KEY_PREFIX`| `noviq:`    | Key namespace         |
+| Variable           | Default     | Description           |
+| ------------------ | ----------- | --------------------- |
+| `REDIS_HOST`       | `localhost` | Redis host            |
+| `REDIS_PORT`       | `6379`      | Redis port            |
+| `REDIS_PASSWORD`   | `123456`    | Redis password        |
+| `REDIS_DB`         | `0`         | Redis database number |
+| `REDIS_KEY_PREFIX` | `noviq:`    | Key namespace         |
 
 ### JWT
 
-| Variable             | Default                                        | Description               |
-| -------------------- | ---------------------------------------------- | ------------------------- |
-| `JWT_ACCESS_SECRET`  | `noviq-dev-access-token-secret-change-me`      | Access token signing key  |
-| `JWT_REFRESH_SECRET` | `noviq-dev-refresh-token-secret-change-me`     | Refresh token signing key |
-| `JWT_ACCESS_TTL`     | `15m`                                          | Access token lifetime     |
-| `JWT_REFRESH_TTL`    | `7d`                                           | Refresh token lifetime    |
-| `JWT_ISSUER`         | `noviq-api`                                    | JWT issuer claim          |
-| `JWT_AUDIENCE`       | `noviq-client`                                 | JWT audience claim        |
+| Variable             | Default                                    | Description               |
+| -------------------- | ------------------------------------------ | ------------------------- |
+| `JWT_ACCESS_SECRET`  | `noviq-dev-access-token-secret-change-me`  | Access token signing key  |
+| `JWT_REFRESH_SECRET` | `noviq-dev-refresh-token-secret-change-me` | Refresh token signing key |
+| `JWT_ACCESS_TTL`     | `15m`                                      | Access token lifetime     |
+| `JWT_REFRESH_TTL`    | `7d`                                       | Refresh token lifetime    |
+| `JWT_ISSUER`         | `noviq-api`                                | JWT issuer claim          |
+| `JWT_AUDIENCE`       | `noviq-client`                             | JWT audience claim        |
 
 ### AWS S3
 
-| Variable                        | Default   | Description                 |
-| ------------------------------- | --------- | --------------------------- |
-| `AWS_REGION`                    | `us-east-1`| AWS region                 |
-| `AWS_ACCESS_KEY_ID`             | —         | AWS access key              |
-| `AWS_SECRET_ACCESS_KEY`         | —         | AWS secret key              |
-| `S3_BUCKET_NAME`                | —         | S3 bucket name              |
-| `S3_ENDPOINT`                   | —         | Custom endpoint (MinIO)     |
-| `S3_FORCE_PATH_STYLE`           | `false`   | Path-style URLs             |
-| `S3_PUBLIC_BASE_URL`            | —         | CDN / public URL base       |
-| `S3_SIGNED_URL_EXPIRES_SECONDS` | `900`     | Signed URL lifetime (15 min)|
-| `S3_KEY_PREFIX`                 | `uploads` | Object key prefix           |
+| Variable                        | Default     | Description                  |
+| ------------------------------- | ----------- | ---------------------------- |
+| `AWS_REGION`                    | `us-east-1` | AWS region                   |
+| `AWS_ACCESS_KEY_ID`             | —           | AWS access key               |
+| `AWS_SECRET_ACCESS_KEY`         | —           | AWS secret key               |
+| `S3_BUCKET_NAME`                | —           | S3 bucket name               |
+| `S3_ENDPOINT`                   | —           | Custom endpoint (MinIO)      |
+| `S3_FORCE_PATH_STYLE`           | `false`     | Path-style URLs              |
+| `S3_PUBLIC_BASE_URL`            | —           | CDN / public URL base        |
+| `S3_SIGNED_URL_EXPIRES_SECONDS` | `900`       | Signed URL lifetime (15 min) |
+| `S3_KEY_PREFIX`                 | `uploads`   | Object key prefix            |
 
 ### Rate Limiting
 
-| Variable         | Default | Description                   |
-| ---------------- | ------- | ----------------------------- |
-| `THROTTLE_TTL`   | `60000` | Default rate limit window (ms)|
-| `THROTTLE_LIMIT` | `60`    | Default max requests/window   |
+| Variable         | Default | Description                    |
+| ---------------- | ------- | ------------------------------ |
+| `THROTTLE_TTL`   | `60000` | Default rate limit window (ms) |
+| `THROTTLE_LIMIT` | `60`    | Default max requests/window    |
 
 ---
 

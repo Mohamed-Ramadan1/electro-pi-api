@@ -9,6 +9,7 @@ import { Notes } from '@modules/notes/entity/notes.entity';
 import { Notifications } from '@modules/notifications/entity/notifications.entity';
 import { Task } from '@modules/tasks/entity/task.entity';
 import { Project } from '@modules/projects/entity/project.entity';
+import { Reminder } from '@modules/reminders/entity/reminder.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -47,6 +48,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Notifications, (notification) => notification.user)
   notifications!: Notifications[];
+
+  @OneToMany(() => Reminder, (reminder) => reminder.user)
+  reminders!: Reminder[];
 
   @OneToMany(() => Task, (task) => task.creator)
   createdTasks!: Task[];

@@ -7,6 +7,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { TasksModule } from './tasks/tasks.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotesModule } from './notes/notes.module';
+import { RemindersModule } from './reminders/reminders.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { NotesModule } from './notes/notes.module';
     ProjectsModule,
     DashboardModule,
     NotesModule,
+    RemindersModule,
   ],
 })
 export class ModulesModule {}
