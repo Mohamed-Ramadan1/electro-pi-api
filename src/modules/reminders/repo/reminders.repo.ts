@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 import { Reminder } from '../entity/reminder.entity';
 import { CreateReminderDto } from '../dto/create-reminder.dto';
 import { UpdateReminderDto } from '../dto/update-reminder.dto';
+import { RescheduleReminderDto } from '../dto/reschedule-reminder.dto';
 
 @Injectable()
 export class ReminderRepository {
@@ -58,5 +59,35 @@ export class ReminderRepository {
       user: { id: userId },
       id: reminderId,
     });
+  }
+
+  reschedule(
+    userId: string,
+    reminderId: string,
+    data: RescheduleReminderDto,
+  ): Promise<UpdateResult> {
+    return this.reminderRepo.update(
+      {
+        user: { id: userId },
+        id: reminderId,
+      },
+      {
+        reminderAt: data.newDate,
+      },
+    );
+  }
+
+  async toggleReminderStatus(
+    userId: string,
+    reminderId: string,
+  ): Promise<Reminder> {
+    const reminder = await this.reminderRepo.findOneByOrFail({
+      user: { id: userId },
+      id: reminderId,
+    });
+
+    reminder.isActive = !reminder.isActive;
+
+    return this.reminderRepo.save(reminder);
   }
 }

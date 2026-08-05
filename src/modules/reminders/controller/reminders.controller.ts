@@ -27,6 +27,7 @@ import {
 import { CreateReminderDto } from '../dto/create-reminder.dto';
 import { UpdateReminderDto } from '../dto/update-reminder.dto';
 import { ReminderResponseDto } from '../dto/reminder-response.dto';
+import { RescheduleReminderDto } from '../dto/reschedule-reminder.dto';
 
 // common imports
 import { Protected, TransformResponseInterceptor } from '@common/index';
@@ -158,22 +159,28 @@ export class RemindersController {
   }
 
   @Patch(':id/reschedule')
-  rescheduleReminder() {
-    this.reminderService.rescheduleReminder();
+  async rescheduleReminder(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() data: RescheduleReminderDto,
+  ) {
+    await this.reminderService.rescheduleReminder(req.user.id, id, data);
     return {
-      message: 'Reminders retrieved successfully.',
+      message: 'Reminders rescheduled  successfully.',
     };
   }
 
   @HttpCode(HttpStatus.OK)
   @Patch(':id/toggle')
-  toggleReminder() {
-    this.reminderService.toggleReminder();
+  async toggleReminder(@Req() req: Request, @Param('id') id: string) {
+    const reminder = await this.reminderService.toggleReminder(req.user.id, id);
     return {
       message: 'Reminders retrieved successfully.',
+      reminder,
     };
   }
 
+  // --------------------------------------------------------------------------------
   @HttpCode(HttpStatus.OK)
   @Patch(':id/snooze')
   snoozeReminder() {
