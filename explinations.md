@@ -17,5 +17,11 @@
 
         exports --> the subset of provided will be exported by this module to be used by other modules
 
-
 providers get @Injectable add to the class metadata that could telling nest.js as this class could be managed by IOC ()
+
+The IOC on nest.js is the nest runtime system itself
+
+What is happen under the hood when inject class (service ) what happened under the hood
+
+First the @inject() decorator that added to the service under the hood do this tell nest.js that this service could be manged by the nest IOC
+in the consumer (that our case the controller) declare a dependanyes on the service token with the injection (constructore injection)
