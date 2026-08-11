@@ -8,6 +8,7 @@ import { QueueService } from './service/queue.service';
 import {
   DEFAULT_QUEUE_NAME,
   EMAIL_QUEUE_NAME,
+  REMINDERS_QUEUE,
   NOTIFICATION_QUEUE_NAME,
 } from './constants/queue.const';
 
@@ -21,6 +22,7 @@ import {
     BullModule.registerQueue(
       { name: DEFAULT_QUEUE_NAME },
       { name: EMAIL_QUEUE_NAME },
+      { name: REMINDERS_QUEUE },
       { name: NOTIFICATION_QUEUE_NAME },
     ),
   ],

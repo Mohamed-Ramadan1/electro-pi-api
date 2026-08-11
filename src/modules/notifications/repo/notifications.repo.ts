@@ -7,11 +7,23 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 // Entity import
 import { Notifications } from '../entity/notifications.entity';
 
+//dto import
+import { CreateNotificationDto } from '../dto/create-notification.dto';
+
 export class NotificationsRepo {
   constructor(
     @InjectRepository(Notifications)
     private readonly notificationsRepository: Repository<Notifications>,
   ) {}
+
+  create(notificationData: CreateNotificationDto): Promise<Notifications> {
+    const { userId, ...data } = notificationData;
+    const notification = this.notificationsRepository.create({
+      ...data,
+      user: { id: userId },
+    });
+    return this.notificationsRepository.save(notification);
+  }
 
   count(userid: string): Promise<number> {
     return this.notificationsRepository.count({

@@ -5,6 +5,7 @@ import {
   DEFAULT_QUEUE_NAME,
   EMAIL_QUEUE_NAME,
   NOTIFICATION_QUEUE_NAME,
+  REMINDERS_QUEUE,
 } from '../constants/queue.const';
 import { QueueJob } from '../types/queue-job.type';
 
@@ -19,11 +20,14 @@ export class QueueService {
     emailQueue: Queue,
     @InjectQueue(NOTIFICATION_QUEUE_NAME)
     notificationQueue: Queue,
+    @InjectQueue(REMINDERS_QUEUE)
+    remindersQueue: Queue,
   ) {
     this.queues = new Map<string, Queue>([
       [DEFAULT_QUEUE_NAME, defaultQueue],
       [EMAIL_QUEUE_NAME, emailQueue],
       [NOTIFICATION_QUEUE_NAME, notificationQueue],
+      [REMINDERS_QUEUE, remindersQueue],
     ]);
   }
 
