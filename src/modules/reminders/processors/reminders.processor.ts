@@ -9,6 +9,8 @@ import { queueJobsNames } from '../types/queue-jobs.type';
 
 import { NotificationsService } from '@modules/notifications/service/notifications.service';
 import { CreateNotificationDto } from '@modules/notifications/dto/create-notification.dto';
+import { QueueService } from '@infrastructure/queues/service/queue.service';
+import { RemindersService } from '../service/reminders.service';
 
 interface ReminderJobData {
   id: string;
@@ -18,20 +20,23 @@ interface ReminderJobData {
   user: { id: string };
 }
 
-@Processor(REMINDERS_QUEUE)
+@Processor(REMINDERS_QUEUE, { concurrency: 9 })
 export class ReminderProcessor extends WorkerHost {
-  constructor(private readonly notificationService: NotificationsService) {
+  constructor(
+    private readonly notificationService: NotificationsService,
+    private readonly queueService: QueueService,
+    private readonly reminderService: RemindersService,
+  ) {
     super();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async process(job: Job, token?: string): Promise<any> {
+  async process(job: Job): Promise<any> {
     switch (job.name) {
       case queueJobsNames.SEND_REMINDER_CREATED_CONFIRMATION:
         return this.handleReminderCreatedConfirmation(job);
 
       case queueJobsNames.SEND_REMINDER_NOTIFICATION:
-        return this.handleReminderNotification();
+        return this.handleReminderNotification(job);
 
       case queueJobsNames.REGISTER_UPCOMING_REMINDERS:
         return this.handleRegisterUpcomingReminders();
@@ -60,11 +65,32 @@ export class ReminderProcessor extends WorkerHost {
     await this.notificationService.createNotification(notificationData);
   }
 
-  private handleReminderNotification(): void {
-    throw new Error('send-reminder-notification job is not yet implemented');
+  private handleReminderNotification(job: Job): void {
+    console.log('zerbooooooooooooooooooooooooooooooooooooooooo');
+    console.log(job.data);
   }
 
-  private handleRegisterUpcomingReminders(): void {
-    // logic to scan/register upcoming reminders into the queue
+  private async handleRegisterUpcomingReminders(): Promise<void> {
+    const reminders = await this.reminderService.getRemindersToTriggered();
+    const remindersIds: string[] = [];
+
+    for (const element of reminders) {
+      try {
+        const delay = element.reminderAt.getTime() - Date.now();
+        if (delay <= 0) continue;
+
+        await this.queueService.addDelayed(
+          REMINDERS_QUEUE,
+          queueJobsNames.SEND_REMINDER_NOTIFICATION,
+          element,
+          delay,
+        );
+        remindersIds.push(element.id);
+      } catch {}
+    }
+
+    if (remindersIds.length > 0) {
+      await this.reminderService.updateReminderQueuedStatus(remindersIds);
+    }
   }
 }

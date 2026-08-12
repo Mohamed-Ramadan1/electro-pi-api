@@ -45,6 +45,9 @@ export class Reminder extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isCompleted!: boolean; // or isDismissed
 
+  @Column({ type: 'boolean', default: false, nullable: false })
+  queued!: boolean;
+
   @Column({ type: 'timestamptz', nullable: true })
   nextTriggerAt!: Date | null;
 }

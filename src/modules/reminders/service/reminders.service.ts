@@ -32,7 +32,8 @@ export class RemindersService implements OnModuleInit {
       {},
       {
         repeat: {
-          pattern: '0 */6 * * *', // every 6 hours: 00:00, 06:00, 12:00, 18:00
+          // pattern: '0 */6 * * *', // every 6 hours: 00:00, 06:00, 12:00, 18:00
+          pattern: '* * * * *', // every minute
         },
         jobId: 'register-upcoming-reminders', // prevents duplicate repeatable jobs on restart
       },
@@ -123,5 +124,41 @@ export class RemindersService implements OnModuleInit {
     reminderId: string,
   ): Promise<Reminder> {
     return this.reminderRepo.markDone(userid, reminderId);
+  }
+
+  getRemindersToTriggered(): Promise<Reminder[]> {
+    const { startOfDay, endOfDay } = this.remindersDates();
+    return this.reminderRepo.remindersToTrigger(startOfDay, endOfDay);
+  }
+
+  // Internal methods
+  private remindersDates() {
+    const now = new Date();
+
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+    return {
+      startOfDay,
+      endOfDay,
+    };
+  }
+  async updateReminderQueuedStatus(reminders: string[]): Promise<void> {
+    await this.reminderRepo.updateQueuedStatus(reminders);
   }
 }

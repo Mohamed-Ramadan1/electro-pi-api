@@ -16,7 +16,7 @@
 
 ## In Progress
 
-### Reminders
+### Reminders (tow options queued if the reminder scheduled for today directly register it to the queue as delayed job , if not )
 
 ### Teams
 
