@@ -47,27 +47,11 @@ export class ReminderProcessor extends WorkerHost {
   }
 
   private async handleReminderCreatedConfirmation(job: Job): Promise<void> {
-    const reminder = job.data as ReminderJobData;
-
-    const reminderDate = new Date(reminder.reminderAt).toLocaleString('en-US', {
-      dateStyle: 'full',
-      timeStyle: 'short',
-    });
-
-    const notificationData: CreateNotificationDto = {
-      userId: reminder.user.id,
-      title: 'New reminder created successfully',
-      message: `Your reminder "${reminder.title}" has been created and will remind you on ${reminderDate}.`,
-      referenceId: reminder.id,
-      referenceType: 'reminder',
-    };
-
-    await this.notificationService.createNotification(notificationData);
+    await this.createReminderNotification(job.data);
   }
 
-  private handleReminderNotification(job: Job): void {
-    console.log('zerbooooooooooooooooooooooooooooooooooooooooo');
-    console.log(job.data);
+  private async handleReminderNotification(job: Job): Promise<void> {
+    await this.createReminderNotification(job.data);
   }
 
   private async handleRegisterUpcomingReminders(): Promise<void> {
@@ -93,10 +77,23 @@ export class ReminderProcessor extends WorkerHost {
       await this.reminderService.updateReminderQueuedStatus(remindersIds);
     }
   }
+
+  private async createReminderNotification(
+    reminder: ReminderJobData,
+  ): Promise<void> {
+    const reminderDate = new Date(reminder.reminderAt).toLocaleString('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+    });
+
+    const notificationData: CreateNotificationDto = {
+      userId: reminder.user.id,
+      title: 'New reminder created successfully',
+      message: `Your reminder "${reminder.title}" has been created and will remind you on ${reminderDate}.`,
+      referenceId: reminder.id,
+      referenceType: 'reminder',
+    };
+
+    await this.notificationService.createNotification(notificationData);
+  }
 }
-
-
-
-
-
-
