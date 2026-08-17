@@ -50,6 +50,7 @@ export class NotificationsController {
     );
     return {
       message: 'Notifications retrieved successfully',
+      results: notifications.length,
       notifications,
     };
   }

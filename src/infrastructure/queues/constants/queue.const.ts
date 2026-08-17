@@ -3,10 +3,12 @@ export const DEFAULT_QUEUE_NAME = 'default';
 export const EMAIL_QUEUE_NAME = 'email';
 
 export const NOTIFICATION_QUEUE_NAME = 'notification';
+export const REMINDERS_QUEUE = 'reminders';
 
 export const QUEUE_NAMES = [
   DEFAULT_QUEUE_NAME,
   EMAIL_QUEUE_NAME,
+  REMINDERS_QUEUE,
   NOTIFICATION_QUEUE_NAME,
 ] as const;
 

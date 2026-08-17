@@ -10,7 +10,13 @@ export class NotificationResponseDto {
 
   @ApiProperty({
     description: 'Notification type',
-    enum: ['task_assigned', 'task_status_changed', 'project_invited', 'project_status_changed', 'general'],
+    enum: [
+      'task_assigned',
+      'task_status_changed',
+      'project_invited',
+      'project_status_changed',
+      'general',
+    ],
     example: 'task_assigned',
   })
   type!: string;

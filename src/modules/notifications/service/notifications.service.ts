@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { InternalServerErrorException, Injectable } from '@nestjs/common';
 
 // repository imports
 import { NotificationsRepo } from '../repo/notifications.repo';
 
 import { Notifications } from '../entity/notifications.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { CreateNotificationDto } from '../dto/create-notification.dto';
 
 @Injectable()
 export class NotificationsService {
@@ -13,6 +14,17 @@ export class NotificationsService {
   async count(userid: string): Promise<number> {
     return this.notificationsRepo.count(userid);
   }
+
+  async createNotification(
+    notificationData: CreateNotificationDto,
+  ): Promise<Notifications> {
+    const notification = await this.notificationsRepo.create(notificationData);
+    if (!notification) {
+      throw new InternalServerErrorException('Failed to create notification.');
+    }
+    return notification;
+  }
+
   getNotifications(userId: string): Promise<Notifications[]> {
     return this.notificationsRepo.findAll(userId);
   }

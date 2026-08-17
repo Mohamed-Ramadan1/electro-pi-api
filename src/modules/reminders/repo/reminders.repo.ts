@@ -6,6 +6,8 @@ import {
   Repository,
   UpdateResult,
   MoreThanOrEqual,
+  Between,
+  In,
 } from 'typeorm';
 
 import { Reminder } from '../entity/reminder.entity';
@@ -135,5 +137,28 @@ export class ReminderRepository {
         reminderAt: 'ASC',
       },
     });
+  }
+
+  remindersToTrigger(startOfDay: Date, endOfDay: Date): Promise<Reminder[]> {
+    return this.reminderRepo.find({
+      where: {
+        reminderAt: Between(startOfDay, endOfDay),
+        queued: false,
+      },
+      relations: {
+        user: true,
+      },
+    });
+  }
+
+  async updateQueuedStatus(reminders: string[]): Promise<void> {
+    await this.reminderRepo.update(
+      {
+        id: In(reminders),
+      },
+      {
+        queued: true,
+      },
+    );
   }
 }
