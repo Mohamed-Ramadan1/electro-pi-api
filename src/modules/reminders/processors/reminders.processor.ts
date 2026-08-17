@@ -12,13 +12,10 @@ import { CreateNotificationDto } from '@modules/notifications/dto/create-notific
 import { QueueService } from '@infrastructure/queues/service/queue.service';
 import { RemindersService } from '../service/reminders.service';
 
-interface ReminderJobData {
-  id: string;
-  title: string;
-  reminderMessage: string;
-  reminderAt: string;
-  user: { id: string };
-}
+import { ReminderJobData } from '../interfaces/reminder-job-data.interface';
+
+type ReminderNotificationType =
+  'reminder-creation-notification' | 'reminder-notification';
 
 @Processor(REMINDERS_QUEUE, { concurrency: 9 })
 export class ReminderProcessor extends WorkerHost {
@@ -47,11 +44,19 @@ export class ReminderProcessor extends WorkerHost {
   }
 
   private async handleReminderCreatedConfirmation(job: Job): Promise<void> {
-    await this.createReminderNotification(job.data);
+    await this.createReminderNotification(job.data, {
+      title: 'New reminder created successfully',
+      notificationType: 'reminder-creation-notification',
+    });
   }
 
   private async handleReminderNotification(job: Job): Promise<void> {
-    await this.createReminderNotification(job.data);
+    const reminder = job.data as ReminderJobData;
+
+    await this.createReminderNotification(reminder, {
+      title: `Reminder: ${reminder.title}`,
+      notificationType: 'reminder-notification',
+    });
   }
 
   private async handleRegisterUpcomingReminders(): Promise<void> {
@@ -80,16 +85,22 @@ export class ReminderProcessor extends WorkerHost {
 
   private async createReminderNotification(
     reminder: ReminderJobData,
+    metaData: { title: string; notificationType: ReminderNotificationType },
   ): Promise<void> {
     const reminderDate = new Date(reminder.reminderAt).toLocaleString('en-US', {
       dateStyle: 'full',
       timeStyle: 'short',
     });
 
+    const messages: Record<ReminderNotificationType, string> = {
+      'reminder-creation-notification': `Your reminder "${reminder.title}" has been created and will remind you on ${reminderDate}.`,
+      'reminder-notification': `${reminder.reminderMessage}`,
+    };
+
     const notificationData: CreateNotificationDto = {
       userId: reminder.user.id,
-      title: 'New reminder created successfully',
-      message: `Your reminder "${reminder.title}" has been created and will remind you on ${reminderDate}.`,
+      title: metaData.title,
+      message: messages[metaData.notificationType],
       referenceId: reminder.id,
       referenceType: 'reminder',
     };
