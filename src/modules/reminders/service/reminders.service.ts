@@ -32,8 +32,8 @@ export class RemindersService implements OnModuleInit {
       {},
       {
         repeat: {
-          // pattern: '0 */6 * * *', // every 6 hours: 00:00, 06:00, 12:00, 18:00
-          pattern: '* * * * *', // every minute
+          pattern: '0 */6 * * *', // every 6 hours: 00:00, 06:00, 12:00, 18:00
+          // pattern: '* * * * *', // every minute
         },
         jobId: 'register-upcoming-reminders', // prevents duplicate repeatable jobs on restart
       },
