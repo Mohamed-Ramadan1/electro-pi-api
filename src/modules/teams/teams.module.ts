@@ -12,9 +12,10 @@ import { TeamsRepository } from './repos/teams.repo';
 
 // entity imports
 import { TeamsEntity } from './entity/teams.entity';
+import { TeamMemberEntity } from './entity/teams-members.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TeamsEntity])],
+  imports: [TypeOrmModule.forFeature([TeamsEntity, TeamMemberEntity])],
   controllers: [TeamsController],
   providers: [TeamsService, TeamsRepository],
 })
