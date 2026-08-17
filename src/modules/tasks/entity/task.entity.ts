@@ -1,7 +1,16 @@
-import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  OneToMany,
+  JoinColumn,
+  JoinTable,
+} from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { User } from '@modules/users/entity/user.entity';
 import { Project } from '@modules/projects/entity/project.entity';
+import { TeamsEntity } from '@modules/teams/entity/teams.entity';
 import { TaskImage } from './task-image.entity';
 import {
   tasksStatus,
@@ -54,4 +63,20 @@ export class Task extends BaseEntity {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'assignee_id' })
   assignee!: User | null;
+
+  @ManyToMany(() => User)
+  @JoinTable({
+    name: 'task_assignees',
+    joinColumn: { name: 'task_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
+  assignees!: User[];
+
+  @ManyToMany(() => TeamsEntity)
+  @JoinTable({
+    name: 'task_teams',
+    joinColumn: { name: 'task_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'team_id', referencedColumnName: 'id' },
+  })
+  teams!: TeamsEntity[];
 }

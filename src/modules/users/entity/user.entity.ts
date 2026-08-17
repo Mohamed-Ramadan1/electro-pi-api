@@ -65,6 +65,9 @@ export class User extends BaseEntity {
   @ManyToMany(() => Project, (project) => project.members)
   memberProjects!: Project[];
 
+  @ManyToMany(() => Task, (task) => task.assignees)
+  taskAssignments!: Task[];
+
   @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.user)
   teamMemberships!: TeamMemberEntity[];
 }

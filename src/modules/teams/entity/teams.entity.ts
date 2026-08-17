@@ -1,6 +1,15 @@
 import { BaseEntity } from '@common/index';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { User } from '@modules/users/entity/user.entity';
+import { Project } from '@modules/projects/entity/project.entity';
+import { Task } from '@modules/tasks/entity/task.entity';
 
 import { TeamMemberEntity } from './teams-members.entity';
 
@@ -33,4 +42,10 @@ export class TeamsEntity extends BaseEntity {
     cascade: true,
   })
   members!: TeamMemberEntity[];
+
+  @ManyToMany(() => Project, (project) => project.teams)
+  projects!: Project[];
+
+  @ManyToMany(() => Task, (task) => task.teams)
+  tasks!: Task[];
 }
