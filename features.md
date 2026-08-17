@@ -46,3 +46,11 @@
 
     Dockerfile
     Docker-compose
+
+/*
+
+-- add the core funcaitly of teams and teams members
+
+-- projetts assing and un assing teams and other related workign related to this featutres
+
+*/
