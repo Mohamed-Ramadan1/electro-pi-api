@@ -33,11 +33,9 @@ export class TeamsController {
   createTeam() {}
 
   @Get()
-  // @Roles(UserRoles.MEMBER)
+  @Roles(UserRoles.MEMBER)
   @HttpCode(HttpStatus.OK)
-  findTeams() {
-    console.log('So you are mother fucer and dont wroking ');
-  }
+  findTeams() {}
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
