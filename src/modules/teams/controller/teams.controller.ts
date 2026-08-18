@@ -33,7 +33,6 @@ export class TeamsController {
   createTeam() {}
 
   @Get()
-  @Roles(UserRoles.MEMBER)
   @HttpCode(HttpStatus.OK)
   findTeams() {}
 

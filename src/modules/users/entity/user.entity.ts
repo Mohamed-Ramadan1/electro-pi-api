@@ -10,7 +10,7 @@ import { Notifications } from '@modules/notifications/entity/notifications.entit
 import { Task } from '@modules/tasks/entity/task.entity';
 import { Project } from '@modules/projects/entity/project.entity';
 import { Reminder } from '@modules/reminders/entity/reminder.entity';
-import { TeamMemberEntity } from '@modules/teams/entity/teams-members.entity';
+import { TeamMember } from '@modules/teams/entity/teams-members.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -68,6 +68,6 @@ export class User extends BaseEntity {
   @ManyToMany(() => Task, (task) => task.assignees)
   taskAssignments!: Task[];
 
-  @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.user)
-  teamMemberships!: TeamMemberEntity[];
+  @OneToMany(() => TeamMember, (teamMember) => teamMember.user)
+  teamMemberships!: TeamMember[];
 }

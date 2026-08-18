@@ -10,7 +10,7 @@ import {
 import { BaseEntity } from '@common/entities/base.entity';
 import { User } from '@modules/users/entity/user.entity';
 import { Project } from '@modules/projects/entity/project.entity';
-import { TeamsEntity } from '@modules/teams/entity/teams.entity';
+import { Team } from '@modules/teams/entity/teams.entity';
 import { TaskImage } from './task-image.entity';
 import {
   tasksStatus,
@@ -72,11 +72,11 @@ export class Task extends BaseEntity {
   })
   assignees!: User[];
 
-  @ManyToMany(() => TeamsEntity)
+  @ManyToMany(() => Team)
   @JoinTable({
     name: 'task_teams',
     joinColumn: { name: 'task_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'team_id', referencedColumnName: 'id' },
   })
-  teams!: TeamsEntity[];
+  teams!: Team[];
 }

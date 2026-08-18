@@ -1,4 +1,4 @@
-import { BaseEntity } from '@common/index';
+import { BaseEntity } from '@common/entities/base.entity';
 import {
   Column,
   Entity,
@@ -11,10 +11,10 @@ import { User } from '@modules/users/entity/user.entity';
 import { Project } from '@modules/projects/entity/project.entity';
 import { Task } from '@modules/tasks/entity/task.entity';
 
-import { TeamMemberEntity } from './teams-members.entity';
+import { TeamMember } from './teams-members.entity';
 
 @Entity('teams')
-export class TeamsEntity extends BaseEntity {
+export class Team extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 150,
@@ -38,10 +38,10 @@ export class TeamsEntity extends BaseEntity {
   @JoinColumn({ name: 'creator_id' })
   creator!: User;
 
-  @OneToMany(() => TeamMemberEntity, (teamMember) => teamMember.team, {
+  @OneToMany(() => TeamMember, (teamMember) => teamMember.team, {
     cascade: true,
   })
-  members!: TeamMemberEntity[];
+  members!: TeamMember[];
 
   @ManyToMany(() => Project, (project) => project.teams)
   projects!: Project[];
