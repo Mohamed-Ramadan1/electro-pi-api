@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.log('We aer here to do this wroking ');
     const protectedRequest = this.isProtected(context);
 
     if (!protectedRequest) return true;

@@ -14,6 +14,7 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    console.log('We are on roles managmetns ');
     const handler = context.getHandler();
     const cls = context.getClass();
 
