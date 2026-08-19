@@ -1,9 +1,54 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Team } from '../entity/teams.entity';
-import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Repository, DeepPartial } from 'typeorm';
+import {
+  BadRequestException,
+  NotFoundException,
+  Injectable,
+} from '@nestjs/common';
 
 @Injectable()
 export class TeamsRepository {
-  constructor(@InjectRepository(Team) teamsRepo: Repository<Team>) {}
+  constructor(
+    @InjectRepository(Team) private readonly teamRepo: Repository<Team>,
+  ) {}
+
+  create(payload: DeepPartial<Team>): Promise<Team> {
+    const team = this.teamRepo.create(payload);
+    return this.teamRepo.save(team);
+  }
+  async findById(id: string): Promise<Team> {
+    return await this.teamRepo.findOneByOrFail({
+      id,
+    });
+  }
+
+  findTeams(): Promise<Team[]> {
+    return this.teamRepo.find();
+  }
+
+  async activateTeam(id: string): Promise<Team> {
+    const team = await this.getTeam(id);
+    if (team.isActive) throw new BadRequestException('Team already active');
+
+    team.isActive = true;
+    return this.teamRepo.save(team);
+  }
+
+  async deactivateTeam(id: string): Promise<Team> {
+    const team = await this.getTeam(id);
+    if (!team.isActive)
+      throw new BadRequestException('Team already not active ');
+
+    team.isActive = false;
+    return this.teamRepo.save(team);
+  }
+
+  private async getTeam(id: string): Promise<Team> {
+    const team = await this.teamRepo.findOneBy({
+      id,
+    });
+    if (!team) throw new NotFoundException('Team not found');
+    return team;
+  }
 }

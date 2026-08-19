@@ -8,7 +8,11 @@ import {
   HttpCode,
   UseInterceptors,
   UseGuards,
+  Param,
+  Body,
 } from '@nestjs/common';
+
+import { Request } from 'express';
 
 // services imports
 import { TeamsService } from '../service/teams.service';
@@ -18,7 +22,12 @@ import {
   RolesGuard,
   TransformResponseInterceptor,
   UserRoles,
+  CurrentUser,
+  AuthenticatedUser,
 } from '@common/index';
+
+// Dto imports
+import { CreateTeamDto } from '../dto/create-team.dto';
 
 @Controller('teams')
 @Protected()
@@ -30,29 +39,69 @@ export class TeamsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createTeam() {}
+  async createTeam(
+    @Body() teamData: CreateTeamDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    const team = await this.teamsService.createTeam(teamData, user.id);
+    return {
+      message: 'Team created successfully.',
+      data: {
+        team,
+      },
+    };
+  }
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findTeams() {}
+  async findTeams() {
+    const teams = await this.teamsService.getTeams();
+    return {
+      message: 'Teams have been retrieved successfully.',
+      results: teams.length,
+      data: {
+        teams,
+      },
+    };
+  }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findTeam() {}
+  async findTeam(@Param('id') id: string) {
+    const team = await this.teamsService.getTeam(id);
+    return {
+      message: 'Team data have been fetched successfully.',
+      team,
+    };
+  }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  updateTeam() {}
+  updateTeam() {
+    this.teamsService.updateTeam();
+  }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteTeam() {}
+  deleteTeam() {
+    this.teamsService.deleteTeam();
+  }
 
   @Patch(':id/activate')
   @HttpCode(HttpStatus.OK)
-  activateTeam() {}
+  async activateTeam(@Param('id') id: string) {
+    await this.teamsService.activateTeam(id);
+    return {
+      message: 'Team activated successfully',
+    };
+  }
 
   @Patch(':id/deactivate')
   @HttpCode(HttpStatus.OK)
-  deactivateTeam() {}
+  async deactivateTeam(@Param('id') id: string) {
+    await this.teamsService.deactivateTeam(id);
+    return {
+      message: 'Team deactivated successfully',
+    };
+  }
 }
