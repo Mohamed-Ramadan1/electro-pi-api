@@ -27,6 +27,12 @@ export class TeamsRepository {
     return this.teamRepo.find();
   }
 
+  async update(id: string, payload: DeepPartial<Team>): Promise<Team> {
+    const team = await this.getTeam(id);
+    Object.assign(team, payload);
+    return this.teamRepo.save(team);
+  }
+
   async delete(id: string): Promise<void> {
     await this.getTeam(id);
     await this.teamRepo.delete({

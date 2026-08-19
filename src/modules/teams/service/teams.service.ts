@@ -10,6 +10,7 @@ import { TeamMember } from '../entity/teams-members.entity';
 
 // Dto imports
 import { CreateTeamDto } from '../dto/create-team.dto';
+import { UpdateTeamDto } from '../dto/update-team.dto';
 import { DeepPartial } from 'typeorm';
 @Injectable()
 export class TeamsService {
@@ -36,7 +37,10 @@ export class TeamsService {
   getTeam(id: string): Promise<Team> {
     return this.teamsRepo.findById(id);
   }
-  updateTeam() {}
+  updateTeam(id: string, teamData: UpdateTeamDto): Promise<Team> {
+    return this.teamsRepo.update(id, this.buildTeamPayload(teamData));
+  }
+
   deleteTeam(id: string) {
     this.teamsRepo.delete(id);
   }
@@ -45,5 +49,24 @@ export class TeamsService {
   }
   async deactivateTeam(id: string): Promise<void> {
     await this.teamsRepo.deactivateTeam(id);
+  }
+
+  private buildTeamPayload(teamData: UpdateTeamDto): DeepPartial<Team> {
+    const payload: DeepPartial<Team> = {};
+    if (teamData.name !== undefined) payload.name = teamData.name;
+    if (teamData.key !== undefined) payload.key = teamData.key;
+    if (teamData.description !== undefined)
+      payload.description = teamData.description;
+    if (teamData.avatar !== undefined) payload.avatar = teamData.avatar;
+    if (teamData.members !== undefined)
+      payload.members = teamData.members.map((userId) => ({
+        user: { id: userId },
+      }));
+    if (teamData.projects !== undefined)
+      payload.projects = teamData.projects.map((id) => ({ id }));
+    if (teamData.tasks !== undefined)
+      payload.tasks = teamData.tasks.map((id) => ({ id }));
+
+    return payload;
   }
 }

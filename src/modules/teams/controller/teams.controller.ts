@@ -16,6 +16,7 @@ import { Request } from 'express';
 
 // services imports
 import { TeamsService } from '../service/teams.service';
+import { UpdateTeamDto } from '../dto/update-team.dto';
 import {
   Protected,
   Roles,
@@ -79,8 +80,14 @@ export class TeamsController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  updateTeam() {
-    this.teamsService.updateTeam();
+  async updateTeam(@Param('id') id: string, @Body() dto: UpdateTeamDto) {
+    const team = await this.teamsService.updateTeam(id, dto);
+    return {
+      message: 'Team has been updated successfully.',
+      data: {
+        team,
+      },
+    };
   }
 
   @Delete(':id')
