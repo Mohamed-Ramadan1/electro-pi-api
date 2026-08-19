@@ -71,7 +71,9 @@ export class TeamsController {
     const team = await this.teamsService.getTeam(id);
     return {
       message: 'Team data have been fetched successfully.',
-      team,
+      data: {
+        team,
+      },
     };
   }
 
@@ -83,8 +85,8 @@ export class TeamsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteTeam() {
-    this.teamsService.deleteTeam();
+  deleteTeam(@Param('id') id: string) {
+    this.teamsService.deleteTeam(id);
   }
 
   @Patch(':id/activate')

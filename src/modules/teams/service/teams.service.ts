@@ -37,7 +37,9 @@ export class TeamsService {
     return this.teamsRepo.findById(id);
   }
   updateTeam() {}
-  deleteTeam() {}
+  deleteTeam(id: string) {
+    this.teamsRepo.delete(id);
+  }
   async activateTeam(id: string): Promise<void> {
     await this.teamsRepo.activateTeam(id);
   }
@@ -45,15 +47,3 @@ export class TeamsService {
     await this.teamsRepo.deactivateTeam(id);
   }
 }
-
-/* 
-
-The data coming form the forntnbed 
-user (Who create this team)
-
-// will have spechila case ot be handled throw 
-in case of avatar existing / memebers of team if they existing 
-
-
-// Projects and tasks as well 
-*/

@@ -27,6 +27,13 @@ export class TeamsRepository {
     return this.teamRepo.find();
   }
 
+  async delete(id: string): Promise<void> {
+    await this.getTeam(id);
+    await this.teamRepo.delete({
+      id: id,
+    });
+  }
+
   async activateTeam(id: string): Promise<Team> {
     const team = await this.getTeam(id);
     if (team.isActive) throw new BadRequestException('Team already active');
