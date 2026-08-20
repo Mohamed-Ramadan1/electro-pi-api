@@ -72,7 +72,7 @@ export class Task extends BaseEntity {
   })
   assignees!: User[];
 
-  @ManyToMany(() => Team)
+  @ManyToMany(() => Team, (team) => team.tasks)
   @JoinTable({
     name: 'task_teams',
     joinColumn: { name: 'task_id', referencedColumnName: 'id' },

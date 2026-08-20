@@ -10,7 +10,17 @@ import {
   UseGuards,
   Param,
   Body,
+  Query,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+  ApiExtraModels,
+} from '@nestjs/swagger';
 
 // services imports
 import { TeamsService } from '../service/teams.service';
@@ -28,7 +38,12 @@ import {
 // Dto imports
 import { CreateTeamDto } from '../dto/create-team.dto';
 import { AddMemberToTeamDto } from '../dto/add-member-to-team.dto';
+import { TeamResponseDto } from '../dto/team-response.dto';
+import { TeamMemberResponseDto } from '../dto/team-member-response.dto';
 
+@ApiTags('Teams')
+@ApiBearerAuth()
+@ApiExtraModels(TeamResponseDto, TeamMemberResponseDto)
 @Controller('teams')
 @Protected()
 @Roles(UserRoles.ADMIN)
@@ -37,6 +52,24 @@ import { AddMemberToTeamDto } from '../dto/add-member-to-team.dto';
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
+  @ApiOperation({ summary: 'Create a new team' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Team created successfully.',
+    type: TeamResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Team key already exists.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createTeam(
@@ -52,6 +85,16 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'List all teams' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Teams retrieved successfully.',
+    type: [TeamResponseDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Get()
   @HttpCode(HttpStatus.OK)
   async findTeams() {
@@ -65,10 +108,32 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Get a single team' })
+  @ApiParam({ name: 'id', description: 'Team UUID', format: 'uuid' })
+  @ApiQuery({
+    name: 'include',
+    required: false,
+    description: 'Comma-separated relations to load. Allowed: projects, tasks.',
+    example: 'projects,tasks',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Team data fetched successfully.',
+    type: TeamResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findTeam(@Param('id') id: string) {
-    const team = await this.teamsService.getTeam(id);
+  async findTeam(@Param('id') id: string, @Query('include') include?: string) {
+    const relations = {
+      projects: include?.split(',').includes('projects') ?? false,
+      tasks: include?.split(',').includes('tasks') ?? false,
+    };
+    const team = await this.teamsService.getTeam(id, relations);
     return {
       message: 'Team data have been fetched successfully.',
       data: {
@@ -77,6 +142,22 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Update a team' })
+  @ApiParam({ name: 'id', description: 'Team UUID', format: 'uuid' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Team updated successfully.',
+    type: TeamResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed.',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async updateTeam(@Param('id') id: string, @Body() dto: UpdateTeamDto) {
@@ -89,12 +170,38 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Delete a team' })
+  @ApiParam({ name: 'id', description: 'Team UUID', format: 'uuid' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Team deleted successfully.',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteTeam(@Param('id') id: string) {
     this.teamsService.deleteTeam(id);
   }
 
+  @ApiOperation({ summary: 'Activate a team' })
+  @ApiParam({ name: 'id', description: 'Team UUID', format: 'uuid' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Team activated successfully.',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Team already active.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Patch(':id/activate')
   @HttpCode(HttpStatus.OK)
   async activateTeam(@Param('id') id: string) {
@@ -104,6 +211,21 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Deactivate a team' })
+  @ApiParam({ name: 'id', description: 'Team UUID', format: 'uuid' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Team deactivated successfully.',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Team already not active.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Patch(':id/deactivate')
   @HttpCode(HttpStatus.OK)
   async deactivateTeam(@Param('id') id: string) {
@@ -115,6 +237,22 @@ export class TeamsController {
 
   // Members related routes
 
+  @ApiOperation({ summary: 'Add a member to a team' })
+  @ApiParam({ name: 'teamId', description: 'Team UUID', format: 'uuid' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Member added to the team successfully.',
+    type: TeamMemberResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed.',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Post(':teamId/members')
   @HttpCode(HttpStatus.CREATED)
   async addMemberToTeam(
@@ -135,6 +273,18 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'List all members of a team' })
+  @ApiParam({ name: 'teamId', description: 'Team UUID', format: 'uuid' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Members retrieved successfully.',
+    type: [TeamMemberResponseDto],
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Team not found.' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Get(':teamId/members')
   @HttpCode(HttpStatus.OK)
   async getTeamMembers(@Param('teamId') teamId: string) {
@@ -148,6 +298,26 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Get a single team member' })
+  @ApiParam({ name: 'teamId', description: 'Team UUID', format: 'uuid' })
+  @ApiParam({
+    name: 'memberId',
+    description: 'Team member UUID',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Member retrieved successfully.',
+    type: TeamMemberResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Member not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Get(':teamId/members/:memberId')
   @HttpCode(HttpStatus.OK)
   async getTeamMember(
@@ -163,6 +333,25 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Remove a member from a team' })
+  @ApiParam({ name: 'teamId', description: 'Team UUID', format: 'uuid' })
+  @ApiParam({
+    name: 'memberId',
+    description: 'Team member UUID',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Member removed successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Member not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Delete(':teamId/members/:memberId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMemberFromTeam(
@@ -172,6 +361,29 @@ export class TeamsController {
     await this.teamsService.removeMember(teamId, memberId);
   }
 
+  @ApiOperation({ summary: 'Activate a team member' })
+  @ApiParam({ name: 'teamId', description: 'Team UUID', format: 'uuid' })
+  @ApiParam({
+    name: 'memberId',
+    description: 'Team member UUID',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Member activated successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Member not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Member already active.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Patch(':teamId/members/:memberId/activate')
   @HttpCode(HttpStatus.OK)
   async activateMember(
@@ -184,6 +396,29 @@ export class TeamsController {
     };
   }
 
+  @ApiOperation({ summary: 'Deactivate a team member' })
+  @ApiParam({ name: 'teamId', description: 'Team UUID', format: 'uuid' })
+  @ApiParam({
+    name: 'memberId',
+    description: 'Team member UUID',
+    format: 'uuid',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Member deactivated successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Member not found.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Member already not active.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid access token.',
+  })
   @Patch(':teamId/members/:memberId/deactivate')
   @HttpCode(HttpStatus.OK)
   async deactivateMember(

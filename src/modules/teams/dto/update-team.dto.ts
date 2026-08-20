@@ -72,48 +72,4 @@ export class UpdateTeamDto {
   @IsArray()
   @IsUUID('4', { each: true })
   members?: string[];
-
-  @ApiPropertyOptional({
-    description: 'IDs of projects to associate with the team',
-    example: ['550e8400-e29b-41d4-a716-446655440000'],
-    isArray: true,
-  })
-  @Transform(({ value }) => {
-    if (Array.isArray(value)) return value;
-    if (typeof value === 'string' && value.trim()) {
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [value];
-      } catch {
-        return [value];
-      }
-    }
-    return [];
-  })
-  @IsOptional()
-  @IsArray()
-  @IsUUID('4', { each: true })
-  projects?: string[];
-
-  @ApiPropertyOptional({
-    description: 'IDs of tasks to associate with the team',
-    example: ['6ba7b810-9dad-11d1-80b4-00c04fd430c8'],
-    isArray: true,
-  })
-  @Transform(({ value }) => {
-    if (Array.isArray(value)) return value;
-    if (typeof value === 'string' && value.trim()) {
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [value];
-      } catch {
-        return [value];
-      }
-    }
-    return [];
-  })
-  @IsOptional()
-  @IsArray()
-  @IsUUID('4', { each: true })
-  tasks?: string[];
 }

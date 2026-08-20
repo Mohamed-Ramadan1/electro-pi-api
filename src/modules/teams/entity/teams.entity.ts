@@ -6,7 +6,6 @@ import {
   ManyToOne,
   ManyToMany,
   OneToMany,
-  JoinTable,
 } from 'typeorm';
 import { User } from '@modules/users/entity/user.entity';
 import { Project } from '@modules/projects/entity/project.entity';
@@ -45,7 +44,6 @@ export class Team extends BaseEntity {
   members!: TeamMember[];
 
   @ManyToMany(() => Project, (project) => project.teams)
-  @JoinTable({ name: 'team_projects' })
   projects!: Project[];
 
   @ManyToMany(() => Task, (task) => task.teams)

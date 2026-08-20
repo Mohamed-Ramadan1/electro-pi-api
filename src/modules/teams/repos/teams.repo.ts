@@ -17,9 +17,13 @@ export class TeamsRepository {
     const team = this.teamRepo.create(payload);
     return this.teamRepo.save(team);
   }
-  async findById(id: string): Promise<Team> {
-    return await this.teamRepo.findOneByOrFail({
-      id,
+  async findById(
+    id: string,
+    relations?: { projects?: boolean; tasks?: boolean },
+  ): Promise<Team> {
+    return await this.teamRepo.findOneOrFail({
+      where: { id },
+      relations: relations ?? {},
     });
   }
 

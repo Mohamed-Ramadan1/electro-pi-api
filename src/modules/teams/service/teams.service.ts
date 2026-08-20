@@ -27,16 +27,17 @@ export class TeamsService {
       description: teamData.description,
       creator: { id: userId },
       members: teamData.members?.map((userId) => ({ user: { id: userId } })),
-      projects: teamData.projects?.map((id) => ({ id })),
-      tasks: teamData.tasks?.map((id) => ({ id })),
     };
     return this.teamsRepo.create(payload);
   }
   getTeams(): Promise<Team[]> {
     return this.teamsRepo.findTeams();
   }
-  getTeam(id: string): Promise<Team> {
-    return this.teamsRepo.findById(id);
+  getTeam(
+    id: string,
+    relations?: { projects?: boolean; tasks?: boolean },
+  ): Promise<Team> {
+    return this.teamsRepo.findById(id, relations);
   }
   updateTeam(id: string, teamData: UpdateTeamDto): Promise<Team> {
     return this.teamsRepo.update(id, this.buildTeamPayload(teamData));
@@ -95,10 +96,6 @@ export class TeamsService {
       payload.members = teamData.members.map((userId) => ({
         user: { id: userId },
       }));
-    if (teamData.projects !== undefined)
-      payload.projects = teamData.projects.map((id) => ({ id }));
-    if (teamData.tasks !== undefined)
-      payload.tasks = teamData.tasks.map((id) => ({ id }));
 
     return payload;
   }

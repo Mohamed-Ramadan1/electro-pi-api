@@ -54,7 +54,7 @@ export class Project extends BaseEntity {
   })
   members!: User[];
 
-  @ManyToMany(() => Team)
+  @ManyToMany(() => Team, (team) => team.projects)
   @JoinTable({
     name: 'project_teams',
     joinColumn: { name: 'project_id', referencedColumnName: 'id' },
