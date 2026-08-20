@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class MigrateTeamProjectsToProjectTeams1787209613657
-  implements MigrationInterface
-{
+export class MigrateTeamProjectsToProjectTeams1787209613657 implements MigrationInterface {
   name = 'MigrateTeamProjectsToProjectTeams1787209613657';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

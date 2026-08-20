@@ -1,128 +1,347 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class Migration1787052504661 implements MigrationInterface {
-    name = 'Migration1787052504661'
+  name = 'Migration1787052504661';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TYPE "public"."team_members_role_enum" AS ENUM('owner', 'admin', 'member')`);
-        await queryRunner.query(`CREATE TABLE "team_members" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "isActive" boolean NOT NULL DEFAULT true, "role" "public"."team_members_role_enum" NOT NULL DEFAULT 'member', "team_id" uuid NOT NULL, "user_id" uuid NOT NULL, CONSTRAINT "PK_ca3eae89dcf20c9fd95bf7460aa" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_6998e78646098c0a3ee55c22ca" ON "team_members"  ("isActive") `);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_1d3c06a8217a8785e2af0ec4ab" ON "team_members"  ("team_id", "user_id") `);
-        await queryRunner.query(`CREATE TABLE "teams" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "isActive" boolean NOT NULL DEFAULT true, "name" character varying(150) NOT NULL, "key" character varying(20) NOT NULL, "description" text NOT NULL, "avatar" character varying, "creator_id" uuid NOT NULL, CONSTRAINT "UQ_2722676a1a73171b304a68dac4d" UNIQUE ("key"), CONSTRAINT "PK_7e5523774a38b08a6236d322403" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_a7e76835b0afeb79c5f43fb31d" ON "teams"  ("isActive") `);
-        await queryRunner.query(`CREATE TABLE "project_teams" ("project_id" uuid NOT NULL, "team_id" uuid NOT NULL, CONSTRAINT "PK_0474ed6380b82e0ecdb54124a93" PRIMARY KEY ("project_id", "team_id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_8e02f911192897094a081e6823" ON "project_teams"  ("project_id") `);
-        await queryRunner.query(`CREATE INDEX "IDX_c448616f12038bffafbeea6828" ON "project_teams"  ("team_id") `);
-        await queryRunner.query(`CREATE TABLE "task_assignees" ("task_id" uuid NOT NULL, "user_id" uuid NOT NULL, CONSTRAINT "PK_7ae8012667c1cc4ca8266002afc" PRIMARY KEY ("task_id", "user_id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_0141288f2306f20da9a60ec8d6" ON "task_assignees"  ("task_id") `);
-        await queryRunner.query(`CREATE INDEX "IDX_bb8051e376a2b083e074678cb6" ON "task_assignees"  ("user_id") `);
-        await queryRunner.query(`CREATE TABLE "task_teams" ("task_id" uuid NOT NULL, "team_id" uuid NOT NULL, CONSTRAINT "PK_b7bb1c6365e1b6fa601d335ea52" PRIMARY KEY ("task_id", "team_id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_da5a226d4f7f5d3ad588304bf2" ON "task_teams"  ("task_id") `);
-        await queryRunner.query(`CREATE INDEX "IDX_7bb64be2e8bcfa2d7917356230" ON "task_teams"  ("team_id") `);
-        await queryRunner.query(`ALTER TABLE "notifications" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "notifications" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "project_members" DROP CONSTRAINT "FK_b5729113570c20c7e214cf3f58d"`);
-        await queryRunner.query(`ALTER TABLE "tasks" DROP CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4"`);
-        await queryRunner.query(`ALTER TABLE "projects" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "projects" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "task_images" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "task_images" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "task_images" DROP CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a"`);
-        await queryRunner.query(`ALTER TABLE "tasks" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "tasks" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "reminders" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "reminders" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "projects" DROP CONSTRAINT "FK_4b86fad39217ca10aace123c7bd"`);
-        await queryRunner.query(`ALTER TABLE "project_members" DROP CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8"`);
-        await queryRunner.query(`ALTER TABLE "tasks" DROP CONSTRAINT "FK_f4cb489461bc751498a28852356"`);
-        await queryRunner.query(`ALTER TABLE "tasks" DROP CONSTRAINT "FK_855d484825b715c545349212c7f"`);
-        await queryRunner.query(`ALTER TABLE "notes" DROP CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7"`);
-        await queryRunner.query(`ALTER TABLE "notifications" DROP CONSTRAINT "FK_9a8a82462cab47c73d25f49261f"`);
-        await queryRunner.query(`ALTER TABLE "reminders" DROP CONSTRAINT "FK_586e0b8e419125be507701cee2a"`);
-        await queryRunner.query(`ALTER TABLE "users" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "users" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "notes" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "notes" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`);
-        await queryRunner.query(`ALTER TABLE "notifications" ADD CONSTRAINT "FK_9a8a82462cab47c73d25f49261f" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "team_members" ADD CONSTRAINT "FK_fdad7d5768277e60c40e01cdcea" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "team_members" ADD CONSTRAINT "FK_c2bf4967c8c2a6b845dadfbf3d4" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "teams" ADD CONSTRAINT "FK_42744d21c558ffeb2b57a1f6a1a" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "projects" ADD CONSTRAINT "FK_4b86fad39217ca10aace123c7bd" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "task_images" ADD CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "tasks" ADD CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "tasks" ADD CONSTRAINT "FK_f4cb489461bc751498a28852356" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "tasks" ADD CONSTRAINT "FK_855d484825b715c545349212c7f" FOREIGN KEY ("assignee_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "reminders" ADD CONSTRAINT "FK_586e0b8e419125be507701cee2a" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "notes" ADD CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "project_members" ADD CONSTRAINT "FK_b5729113570c20c7e214cf3f58d" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "project_members" ADD CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "project_teams" ADD CONSTRAINT "FK_8e02f911192897094a081e6823b" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "project_teams" ADD CONSTRAINT "FK_c448616f12038bffafbeea68285" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "task_assignees" ADD CONSTRAINT "FK_0141288f2306f20da9a60ec8d69" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "task_assignees" ADD CONSTRAINT "FK_bb8051e376a2b083e074678cb60" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "task_teams" ADD CONSTRAINT "FK_da5a226d4f7f5d3ad588304bf2c" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "task_teams" ADD CONSTRAINT "FK_7bb64be2e8bcfa2d7917356230d" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-    }
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TYPE "public"."team_members_role_enum" AS ENUM('owner', 'admin', 'member')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "team_members" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "isActive" boolean NOT NULL DEFAULT true, "role" "public"."team_members_role_enum" NOT NULL DEFAULT 'member', "team_id" uuid NOT NULL, "user_id" uuid NOT NULL, CONSTRAINT "PK_ca3eae89dcf20c9fd95bf7460aa" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_6998e78646098c0a3ee55c22ca" ON "team_members"  ("isActive") `,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_1d3c06a8217a8785e2af0ec4ab" ON "team_members"  ("team_id", "user_id") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "teams" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "isActive" boolean NOT NULL DEFAULT true, "name" character varying(150) NOT NULL, "key" character varying(20) NOT NULL, "description" text NOT NULL, "avatar" character varying, "creator_id" uuid NOT NULL, CONSTRAINT "UQ_2722676a1a73171b304a68dac4d" UNIQUE ("key"), CONSTRAINT "PK_7e5523774a38b08a6236d322403" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_a7e76835b0afeb79c5f43fb31d" ON "teams"  ("isActive") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "project_teams" ("project_id" uuid NOT NULL, "team_id" uuid NOT NULL, CONSTRAINT "PK_0474ed6380b82e0ecdb54124a93" PRIMARY KEY ("project_id", "team_id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_8e02f911192897094a081e6823" ON "project_teams"  ("project_id") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_c448616f12038bffafbeea6828" ON "project_teams"  ("team_id") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "task_assignees" ("task_id" uuid NOT NULL, "user_id" uuid NOT NULL, CONSTRAINT "PK_7ae8012667c1cc4ca8266002afc" PRIMARY KEY ("task_id", "user_id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_0141288f2306f20da9a60ec8d6" ON "task_assignees"  ("task_id") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_bb8051e376a2b083e074678cb6" ON "task_assignees"  ("user_id") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "task_teams" ("task_id" uuid NOT NULL, "team_id" uuid NOT NULL, CONSTRAINT "PK_b7bb1c6365e1b6fa601d335ea52" PRIMARY KEY ("task_id", "team_id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_da5a226d4f7f5d3ad588304bf2" ON "task_teams"  ("task_id") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_7bb64be2e8bcfa2d7917356230" ON "task_teams"  ("team_id") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" DROP CONSTRAINT "FK_b5729113570c20c7e214cf3f58d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" DROP CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" DROP CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" DROP CONSTRAINT "FK_4b86fad39217ca10aace123c7bd"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" DROP CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" DROP CONSTRAINT "FK_f4cb489461bc751498a28852356"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" DROP CONSTRAINT "FK_855d484825b715c545349212c7f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" DROP CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" DROP CONSTRAINT "FK_9a8a82462cab47c73d25f49261f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" DROP CONSTRAINT "FK_586e0b8e419125be507701cee2a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" ALTER COLUMN "id" SET DEFAULT gen_random_uuid()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" ADD CONSTRAINT "FK_9a8a82462cab47c73d25f49261f" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "team_members" ADD CONSTRAINT "FK_fdad7d5768277e60c40e01cdcea" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "team_members" ADD CONSTRAINT "FK_c2bf4967c8c2a6b845dadfbf3d4" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "teams" ADD CONSTRAINT "FK_42744d21c558ffeb2b57a1f6a1a" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" ADD CONSTRAINT "FK_4b86fad39217ca10aace123c7bd" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" ADD CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ADD CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ADD CONSTRAINT "FK_f4cb489461bc751498a28852356" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ADD CONSTRAINT "FK_855d484825b715c545349212c7f" FOREIGN KEY ("assignee_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" ADD CONSTRAINT "FK_586e0b8e419125be507701cee2a" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" ADD CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" ADD CONSTRAINT "FK_b5729113570c20c7e214cf3f58d" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" ADD CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_teams" ADD CONSTRAINT "FK_8e02f911192897094a081e6823b" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_teams" ADD CONSTRAINT "FK_c448616f12038bffafbeea68285" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_assignees" ADD CONSTRAINT "FK_0141288f2306f20da9a60ec8d69" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_assignees" ADD CONSTRAINT "FK_bb8051e376a2b083e074678cb60" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_teams" ADD CONSTRAINT "FK_da5a226d4f7f5d3ad588304bf2c" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_teams" ADD CONSTRAINT "FK_7bb64be2e8bcfa2d7917356230d" FOREIGN KEY ("team_id") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "task_teams" DROP CONSTRAINT "FK_7bb64be2e8bcfa2d7917356230d"`);
-        await queryRunner.query(`ALTER TABLE "task_teams" DROP CONSTRAINT "FK_da5a226d4f7f5d3ad588304bf2c"`);
-        await queryRunner.query(`ALTER TABLE "task_assignees" DROP CONSTRAINT "FK_bb8051e376a2b083e074678cb60"`);
-        await queryRunner.query(`ALTER TABLE "task_assignees" DROP CONSTRAINT "FK_0141288f2306f20da9a60ec8d69"`);
-        await queryRunner.query(`ALTER TABLE "project_teams" DROP CONSTRAINT "FK_c448616f12038bffafbeea68285"`);
-        await queryRunner.query(`ALTER TABLE "project_teams" DROP CONSTRAINT "FK_8e02f911192897094a081e6823b"`);
-        await queryRunner.query(`ALTER TABLE "project_members" DROP CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8"`);
-        await queryRunner.query(`ALTER TABLE "project_members" DROP CONSTRAINT "FK_b5729113570c20c7e214cf3f58d"`);
-        await queryRunner.query(`ALTER TABLE "notes" DROP CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7"`);
-        await queryRunner.query(`ALTER TABLE "reminders" DROP CONSTRAINT "FK_586e0b8e419125be507701cee2a"`);
-        await queryRunner.query(`ALTER TABLE "tasks" DROP CONSTRAINT "FK_855d484825b715c545349212c7f"`);
-        await queryRunner.query(`ALTER TABLE "tasks" DROP CONSTRAINT "FK_f4cb489461bc751498a28852356"`);
-        await queryRunner.query(`ALTER TABLE "tasks" DROP CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4"`);
-        await queryRunner.query(`ALTER TABLE "task_images" DROP CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a"`);
-        await queryRunner.query(`ALTER TABLE "projects" DROP CONSTRAINT "FK_4b86fad39217ca10aace123c7bd"`);
-        await queryRunner.query(`ALTER TABLE "teams" DROP CONSTRAINT "FK_42744d21c558ffeb2b57a1f6a1a"`);
-        await queryRunner.query(`ALTER TABLE "team_members" DROP CONSTRAINT "FK_c2bf4967c8c2a6b845dadfbf3d4"`);
-        await queryRunner.query(`ALTER TABLE "team_members" DROP CONSTRAINT "FK_fdad7d5768277e60c40e01cdcea"`);
-        await queryRunner.query(`ALTER TABLE "notifications" DROP CONSTRAINT "FK_9a8a82462cab47c73d25f49261f"`);
-        await queryRunner.query(`ALTER TABLE "notes" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "notes" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`ALTER TABLE "users" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "users" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`ALTER TABLE "reminders" ADD CONSTRAINT "FK_586e0b8e419125be507701cee2a" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "notifications" ADD CONSTRAINT "FK_9a8a82462cab47c73d25f49261f" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "notes" ADD CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "tasks" ADD CONSTRAINT "FK_855d484825b715c545349212c7f" FOREIGN KEY ("assignee_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "tasks" ADD CONSTRAINT "FK_f4cb489461bc751498a28852356" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "project_members" ADD CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "projects" ADD CONSTRAINT "FK_4b86fad39217ca10aace123c7bd" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "reminders" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "reminders" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`ALTER TABLE "tasks" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "tasks" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`ALTER TABLE "task_images" ADD CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "task_images" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "task_images" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`ALTER TABLE "projects" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "projects" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`ALTER TABLE "tasks" ADD CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "project_members" ADD CONSTRAINT "FK_b5729113570c20c7e214cf3f58d" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-        await queryRunner.query(`ALTER TABLE "notifications" ALTER COLUMN "id" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "notifications" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_7bb64be2e8bcfa2d7917356230"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_da5a226d4f7f5d3ad588304bf2"`);
-        await queryRunner.query(`DROP TABLE "task_teams"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_bb8051e376a2b083e074678cb6"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_0141288f2306f20da9a60ec8d6"`);
-        await queryRunner.query(`DROP TABLE "task_assignees"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_c448616f12038bffafbeea6828"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_8e02f911192897094a081e6823"`);
-        await queryRunner.query(`DROP TABLE "project_teams"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_a7e76835b0afeb79c5f43fb31d"`);
-        await queryRunner.query(`DROP TABLE "teams"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_1d3c06a8217a8785e2af0ec4ab"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_6998e78646098c0a3ee55c22ca"`);
-        await queryRunner.query(`DROP TABLE "team_members"`);
-        await queryRunner.query(`DROP TYPE "public"."team_members_role_enum"`);
-    }
-
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "task_teams" DROP CONSTRAINT "FK_7bb64be2e8bcfa2d7917356230d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_teams" DROP CONSTRAINT "FK_da5a226d4f7f5d3ad588304bf2c"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_assignees" DROP CONSTRAINT "FK_bb8051e376a2b083e074678cb60"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_assignees" DROP CONSTRAINT "FK_0141288f2306f20da9a60ec8d69"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_teams" DROP CONSTRAINT "FK_c448616f12038bffafbeea68285"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_teams" DROP CONSTRAINT "FK_8e02f911192897094a081e6823b"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" DROP CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" DROP CONSTRAINT "FK_b5729113570c20c7e214cf3f58d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" DROP CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" DROP CONSTRAINT "FK_586e0b8e419125be507701cee2a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" DROP CONSTRAINT "FK_855d484825b715c545349212c7f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" DROP CONSTRAINT "FK_f4cb489461bc751498a28852356"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" DROP CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" DROP CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" DROP CONSTRAINT "FK_4b86fad39217ca10aace123c7bd"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "teams" DROP CONSTRAINT "FK_42744d21c558ffeb2b57a1f6a1a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "team_members" DROP CONSTRAINT "FK_c2bf4967c8c2a6b845dadfbf3d4"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "team_members" DROP CONSTRAINT "FK_fdad7d5768277e60c40e01cdcea"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" DROP CONSTRAINT "FK_9a8a82462cab47c73d25f49261f"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" ADD CONSTRAINT "FK_586e0b8e419125be507701cee2a" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" ADD CONSTRAINT "FK_9a8a82462cab47c73d25f49261f" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notes" ADD CONSTRAINT "FK_7708dcb62ff332f0eaf9f0743a7" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ADD CONSTRAINT "FK_855d484825b715c545349212c7f" FOREIGN KEY ("assignee_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ADD CONSTRAINT "FK_f4cb489461bc751498a28852356" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" ADD CONSTRAINT "FK_e89aae80e010c2faa72e6a49ce8" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" ADD CONSTRAINT "FK_4b86fad39217ca10aace123c7bd" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "reminders" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" ADD CONSTRAINT "FK_da6a05ca90d1247c2cc5c99ef0a" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "task_images" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "projects" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "tasks" ADD CONSTRAINT "FK_9eecdb5b1ed8c7c2a1b392c28d4" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "project_members" ADD CONSTRAINT "FK_b5729113570c20c7e214cf3f58d" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" ALTER COLUMN "id" DROP DEFAULT`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notifications" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4()`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_7bb64be2e8bcfa2d7917356230"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_da5a226d4f7f5d3ad588304bf2"`,
+    );
+    await queryRunner.query(`DROP TABLE "task_teams"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_bb8051e376a2b083e074678cb6"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_0141288f2306f20da9a60ec8d6"`,
+    );
+    await queryRunner.query(`DROP TABLE "task_assignees"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_c448616f12038bffafbeea6828"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_8e02f911192897094a081e6823"`,
+    );
+    await queryRunner.query(`DROP TABLE "project_teams"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_a7e76835b0afeb79c5f43fb31d"`,
+    );
+    await queryRunner.query(`DROP TABLE "teams"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_1d3c06a8217a8785e2af0ec4ab"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_6998e78646098c0a3ee55c22ca"`,
+    );
+    await queryRunner.query(`DROP TABLE "team_members"`);
+    await queryRunner.query(`DROP TYPE "public"."team_members_role_enum"`);
+  }
 }

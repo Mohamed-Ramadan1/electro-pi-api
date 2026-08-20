@@ -13,10 +13,11 @@ import { EventsRepo } from './repo/event.repo';
 // entity imports
 import { Event } from './entity/event.entity';
 import { EventMember } from './entity/event-members.entity';
+import { EventMemberRepo } from './repo/event-member.repo';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event, EventMember])],
-  providers: [EventsService, EventsRepo],
+  providers: [EventsService, EventsRepo, EventMemberRepo],
   controllers: [EventsController],
 })
 export class EventsModule {}
