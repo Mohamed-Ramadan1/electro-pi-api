@@ -22,9 +22,6 @@ import {
   ApiExtraModels,
 } from '@nestjs/swagger';
 
-// services imports
-import { TeamsService } from '../service/teams.service';
-import { UpdateTeamDto } from '../dto/update-team.dto';
 import {
   Protected,
   Roles,
