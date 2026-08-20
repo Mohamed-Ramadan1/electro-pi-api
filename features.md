@@ -14,19 +14,19 @@
 
     Profile not complete.
 
-## In Progress
-
-### Reminders (tow options queued if the reminder scheduled for today directly register it to the queue as delayed job , if not )
+### Notifications
 
 ### Teams
 
-### Work-zone
+### Reminders (tow options queued if the reminder scheduled for today directly register it to the queue as delayed job , if not )
+
+// --------------------------------------------------------
 
 ### Events
 
-### Assistants
+### Work-zone
 
-### Team
+### Assistants
 
 ### Support
 
@@ -35,22 +35,3 @@
 ### Projects
 
 ### Payments
-
-### Notifications
-
-    basic in app ones
-
-    if more time existing (realtime will be added  ).
-
-## Application deployment
-
-    Dockerfile
-    Docker-compose
-
-/*
-
--- add the core funcaitly of teams and teams members
-
--- projetts assing and un assing teams and other related workign related to this featutres
-
-*/

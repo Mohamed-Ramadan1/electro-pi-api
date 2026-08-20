@@ -9,6 +9,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { NotesModule } from './notes/notes.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { TeamsModule } from './teams/teams.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TeamsModule } from './teams/teams.module';
     NotesModule,
     RemindersModule,
     TeamsModule,
+    EventsModule,
   ],
 })
 export class ModulesModule {}
