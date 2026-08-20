@@ -1,0 +1,911 @@
+{
+  "info": {
+    "_postman_id": "63c20ac0-8dd4-4b46-b1a1-a0b5fb69a55a",
+    "name": "Eelectro-api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31297722",
+    "_collection_link": "https://go.postman.co/collection/31297722-63c20ac0-8dd4-4b46-b1a1-a0b5fb69a55a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Str0ng!Pass\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/auth/register",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const accessToken = pm.cookies.get('access-token');",
+                  "const refreshToken = pm.cookies.get('refresh-token');",
+                  "",
+                  "if (accessToken) {",
+                  "  pm.environment.set('accessToken', accessToken);",
+                  "}",
+                  "if (refreshToken) {",
+                  "  pm.environment.set('refreshToken', refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \n  \"email\": \"john@example.com\",\n  \"password\": \"Str0ng!Pass\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/auth/login",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/users/members/me",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "users",
+                "members",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/users/4079dda0-ba9e-455f-a9f6-deb5ab3c66c0",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "users",
+                "4079dda0-ba9e-455f-a9f6-deb5ab3c66c0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/users",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/users/4079dda0-ba9e-455f-a9f6-deb5ab3c66c0",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "users",
+                "4079dda0-ba9e-455f-a9f6-deb5ab3c66c0"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "item": [
+        {
+          "name": "Create project",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "ddddddddddddddd4",
+                  "type": "text",
+                  "uuid": "7af9741b-5533-4c84-a48a-9b40e5d37fef"
+                },
+                {
+                  "key": "description",
+                  "value": "hello we are here",
+                  "type": "text",
+                  "uuid": "e3fa0f5b-1658-45ec-a308-0a71e4185f57"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "d84817eb-3cc3-4133-a7f7-a179209e0952",
+                  "src": "/home/mohamedramadan/Pictures/Screenshots/Screenshot from 2026-08-09 18-31-37.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASEURL}}/projects",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "teams",
+      "item": [
+        {
+          "name": "get all teams ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/teams",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"backend teams\",\n    \"key\":\"BC10\",\n    \"description\":\"The greate mother fucer team\",\n    \"members\":[],\n    \"projects\":[],\n    \"tasks\":[]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams/036e44f9-f9b4-42e7-888f-5ca30c849474/activate",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "036e44f9-f9b4-42e7-888f-5ca30c849474",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams/036e44f9-f9b4-42e7-888f-5ca30c849474/activate",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "036e44f9-f9b4-42e7-888f-5ca30c849474",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/teams/036e44f9-f9b4-42e7-888f-5ca30c849474",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "036e44f9-f9b4-42e7-888f-5ca30c849474"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/teams/5584af4c-cc21-4819-bce8-a0350af31adf",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "5584af4c-cc21-4819-bce8-a0350af31adf"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"backend teams\",\n    \"key\":\"BC910\",\n    \"description\":\"The greate mother fucer team\",\n    \"members\":[],\n    \"projects\":[\"36681f91-cf2f-4b76-bdd6-b29a72aa42f0\"],\n    \"tasks\":[]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams/5584af4c-cc21-4819-bce8-a0350af31adf",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "5584af4c-cc21-4819-bce8-a0350af31adf"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "count-notifications",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \n  \"email\": \"john@example.com\",\n  \"password\": \"Str0ng!Pass\"\n}"
+            },
+            "url": {
+              "raw": "{{BASEURL}}/notifications/count",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "notifications",
+                "count"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user notifications",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/notifications",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "reminders",
+      "item": [
+        {
+          "name": "Get reminders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/reminders",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create remdiner",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\":\"The greate remdiner\",\n    \"reminderMessage\":\"the reminder is greate are you ready to be reminded each time asd\",\n\"reminderAt\": \"2026-08-16T11:19:00.000Z\"\n\n}\n ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get reminder by id ",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\":\"The greate remdiner\",\n    \"reminderMessage\":\"the reminder is greate are you ready to be reminded each time \",\n\"reminderAt\": \"2026-08-10T14:30:00.000Z\",\n\n}"
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders/7617352d-3d8c-4ad4-b3ad-c793571ee8be",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "7617352d-3d8c-4ad4-b3ad-c793571ee8be"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update reminder",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\":\"fuc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders/7617352d-3d8c-4ad4-b3ad-c793571ee8be",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "7617352d-3d8c-4ad4-b3ad-c793571ee8be"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reschedule reminder",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"newDate\":\"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders/7617352d-3d8c-4ad4-b3ad-c793571ee8be",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "7617352d-3d8c-4ad4-b3ad-c793571ee8be"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle reminder status ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders/7617352d-3d8c-4ad4-b3ad-c793571ee8be/toggle",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "7617352d-3d8c-4ad4-b3ad-c793571ee8be",
+                "toggle"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark as done ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders/cf1bbe70-2711-4c29-ba6f-137254973617/acknowledge",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "cf1bbe70-2711-4c29-ba6f-137254973617",
+                "acknowledge"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get upcoming reminders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/reminders/upcoming",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "upcoming"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "snooz reminder",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"snoozeInMinutes\":30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/reminders/7617352d-3d8c-4ad4-b3ad-c793571ee8be/snooze",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "reminders",
+                "7617352d-3d8c-4ad4-b3ad-c793571ee8be",
+                "snooze"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Team-members",
+      "item": []
+    },
+    {
+      "name": "Team-members",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}

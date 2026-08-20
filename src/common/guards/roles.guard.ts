@@ -14,14 +14,15 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+ 
     const handler = context.getHandler();
     const cls = context.getClass();
 
-    const requiredRoles = this.reflector.getAllAndMerge<UserRole[]>(ROLES_KEY, [
-      handler,
-      cls,
-    ]);
-
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      ROLES_KEY,
+      [handler, cls],
+    );
+ 
     // no @Roles() decorator present -> route isn't role-restricted, allow
     if (!requiredRoles || requiredRoles.length === 0) return true;
 

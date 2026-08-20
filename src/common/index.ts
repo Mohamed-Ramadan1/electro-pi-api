@@ -26,3 +26,9 @@ export {
   UploadedFile,
   UploadedFileOptional,
 } from './interfaces/uploadedFile.interface';
+
+// decorator exports
+export { CurrentUser } from './decorators/current-user.decorator';
+
+// interfaces
+export { AuthenticatedUser } from './interfaces/authenticated-user.interface';

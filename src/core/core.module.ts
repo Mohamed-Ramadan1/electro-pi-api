@@ -7,7 +7,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { UsersModule } from '@modules/users/users.module';
 
 // common imports
-import { AllExceptionsFilter } from '@common/index';
+import { AllExceptionsFilter, AuthGuard } from '@common/index';
 
 @Module({
   imports: [
@@ -44,6 +44,10 @@ import { AllExceptionsFilter } from '@common/index';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
     },
   ],
 })
