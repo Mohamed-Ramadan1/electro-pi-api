@@ -11,6 +11,8 @@ import { Task } from '@modules/tasks/entity/task.entity';
 import { Project } from '@modules/projects/entity/project.entity';
 import { Reminder } from '@modules/reminders/entity/reminder.entity';
 import { TeamMember } from '@modules/teams/entity/teams-members.entity';
+import { Event } from '@modules/events/entity/event.entity';
+import { EventMember } from '@modules/events/entity/event-members.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -70,4 +72,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => TeamMember, (teamMember) => teamMember.user)
   teamMemberships!: TeamMember[];
+
+  @OneToMany(() => Event, (event) => event.creator)
+  createdEvents!: Event[];
+
+  @OneToMany(() => EventMember, (eventMember) => eventMember.user)
+  eventMemberships!: EventMember[];
 }
