@@ -65,7 +65,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n \n  \"email\": \"john@example.com\",\n  \"password\": \"Str0ng!Pass\"\n}",
+              "raw": "{\n \n  \"email\": \"john@example.com\",\n  \"password\": \"Str0ng!Pass\"\n\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -897,7 +897,214 @@
     },
     {
       "name": "Team-members",
-      "item": []
+      "item": [
+        {
+          "name": "get team members",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/teams/2381b8a9-ad25-4e04-a2c0-6e1faf574428/members",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "2381b8a9-ad25-4e04-a2c0-6e1faf574428",
+                "members"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get team member ",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/teams/2381b8a9-ad25-4e04-a2c0-6e1faf574428/members",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "2381b8a9-ad25-4e04-a2c0-6e1faf574428",
+                "members"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add member to team",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\":\"fbfeb910-21a9-4b2d-ba51-b4ead21dc4bb\",\n    \"role\":\"owner\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams/2381b8a9-ad25-4e04-a2c0-6e1faf574428/members",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "2381b8a9-ad25-4e04-a2c0-6e1faf574428",
+                "members"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate team member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams/2381b8a9-ad25-4e04-a2c0-6e1faf574428/members/260c4cfe-83ca-42db-ba9c-70e9e836d995/activate",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "2381b8a9-ad25-4e04-a2c0-6e1faf574428",
+                "members",
+                "260c4cfe-83ca-42db-ba9c-70e9e836d995",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate team member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASEURL}}/teams/2381b8a9-ad25-4e04-a2c0-6e1faf574428/members/260c4cfe-83ca-42db-ba9c-70e9e836d995/deactivate",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "2381b8a9-ad25-4e04-a2c0-6e1faf574428",
+                "members",
+                "260c4cfe-83ca-42db-ba9c-70e9e836d995",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete team member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASEURL}}/teams/2381b8a9-ad25-4e04-a2c0-6e1faf574428/members/260c4cfe-83ca-42db-ba9c-70e9e836d995",
+              "host": [
+                "{{BASEURL}}"
+              ],
+              "path": [
+                "teams",
+                "2381b8a9-ad25-4e04-a2c0-6e1faf574428",
+                "members",
+                "260c4cfe-83ca-42db-ba9c-70e9e836d995"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     },
     {
       "name": "Team-members",
