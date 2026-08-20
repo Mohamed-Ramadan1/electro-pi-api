@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Req,
   HttpCode,
   HttpStatus,
   UseInterceptors,
@@ -19,9 +18,9 @@ import {
   Protected,
   RolesGuard,
   TransformResponseInterceptor,
+  CurrentUser,
+  AuthenticatedUser,
 } from '@common/index';
-
-import { Request } from 'express';
 
 @ApiTags('Members')
 @ApiBearerAuth()
@@ -43,14 +42,14 @@ export class MembersController {
   @ApiResponse({ status: 401, description: 'Missing or invalid access token.' })
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  async getMe(@Req() req: Request) {
-    const user = await this.userService.findById(req.user.id);
+  async getMe(@CurrentUser() user: AuthenticatedUser) {
+    const freshUser = await this.userService.findById(user.id);
     return {
       message: 'success retrieval the user  ',
       user: {
-        name: user?.name,
-        email: user?.email,
-        roles: user?.roles,
+        name: freshUser?.name,
+        email: freshUser?.email,
+        roles: freshUser?.roles,
       },
     };
   }

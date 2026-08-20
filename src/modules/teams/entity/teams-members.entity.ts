@@ -29,4 +29,8 @@ export class TeamMember extends BaseEntity {
     default: DEFAULT_TEAM_ROLE,
   })
   role!: TeamRole;
+
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'creator_id' })
+  creator!: User;
 }

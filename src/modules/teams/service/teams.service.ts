@@ -1,4 +1,4 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 // Repository imports
 import { TeamsRepository } from '../repos/teams.repo';
@@ -12,6 +12,7 @@ import { TeamMember } from '../entity/teams-members.entity';
 import { CreateTeamDto } from '../dto/create-team.dto';
 import { UpdateTeamDto } from '../dto/update-team.dto';
 import { DeepPartial } from 'typeorm';
+import { AddMemberToTeamDto } from '../dto/add-member-to-team.dto';
 @Injectable()
 export class TeamsService {
   constructor(
@@ -41,8 +42,8 @@ export class TeamsService {
     return this.teamsRepo.update(id, this.buildTeamPayload(teamData));
   }
 
-  deleteTeam(id: string) {
-    this.teamsRepo.delete(id);
+  deleteTeam(id: string): Promise<void> {
+    return this.teamsRepo.delete(id);
   }
   async activateTeam(id: string): Promise<void> {
     await this.teamsRepo.activateTeam(id);
@@ -51,6 +52,38 @@ export class TeamsService {
     await this.teamsRepo.deactivateTeam(id);
   }
 
+  // Members services methods
+  getTeamMembers(teamId: string): Promise<TeamMember[]> {
+    return this.teamsMembersRepo.getTeamMembers(teamId);
+  }
+  getTeamMember(teamId: string, memberId: string): Promise<TeamMember> {
+    return this.teamsMembersRepo.getTeamMember(teamId, memberId);
+  }
+  addMemberToTeam(
+    teamId: string,
+    data: AddMemberToTeamDto,
+    creator: string,
+  ): Promise<TeamMember> {
+    const payload: DeepPartial<TeamMember> = {
+      team: { id: teamId },
+      user: { id: data.userId },
+      role: data.role,
+      creator: { id: creator },
+    };
+    return this.teamsMembersRepo.addMemberToTeam(payload);
+  }
+
+  removeMember(teamId: string, memberId: string): Promise<void> {
+    return this.teamsMembersRepo.removeMember(teamId, memberId);
+  }
+  activateMember(teamId: string, memberId: string): Promise<void> {
+    return this.teamsMembersRepo.activateMember(teamId, memberId);
+  }
+  deactivateMember(teamId: string, memberId: string): Promise<void> {
+    return this.teamsMembersRepo.deactivateMember(teamId, memberId);
+  }
+
+  // Helpers methods
   private buildTeamPayload(teamData: UpdateTeamDto): DeepPartial<Team> {
     const payload: DeepPartial<Team> = {};
     if (teamData.name !== undefined) payload.name = teamData.name;

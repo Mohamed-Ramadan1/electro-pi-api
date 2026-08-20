@@ -12,8 +12,6 @@ import {
   Body,
 } from '@nestjs/common';
 
-import { Request } from 'express';
-
 // services imports
 import { TeamsService } from '../service/teams.service';
 import { UpdateTeamDto } from '../dto/update-team.dto';
@@ -29,6 +27,7 @@ import {
 
 // Dto imports
 import { CreateTeamDto } from '../dto/create-team.dto';
+import { AddMemberToTeamDto } from '../dto/add-member-to-team.dto';
 
 @Controller('teams')
 @Protected()
@@ -111,6 +110,89 @@ export class TeamsController {
     await this.teamsService.deactivateTeam(id);
     return {
       message: 'Team deactivated successfully',
+    };
+  }
+
+  // Members related routes
+
+  @Post(':teamId/members')
+  @HttpCode(HttpStatus.CREATED)
+  async addMemberToTeam(
+    @Param('teamId') teamId: string,
+    @Body() memberData: AddMemberToTeamDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    const member = await this.teamsService.addMemberToTeam(
+      teamId,
+      memberData,
+      user.id,
+    );
+    return {
+      message: 'Member have been added to the team successfully.',
+      data: {
+        member,
+      },
+    };
+  }
+
+  @Get(':teamId/members')
+  @HttpCode(HttpStatus.OK)
+  async getTeamMembers(@Param('teamId') teamId: string) {
+    const members = await this.teamsService.getTeamMembers(teamId);
+    return {
+      message: 'Members have been retrieved successfully.',
+      results: members.length,
+      data: {
+        members,
+      },
+    };
+  }
+
+  @Get(':teamId/members/:memberId')
+  @HttpCode(HttpStatus.OK)
+  async getTeamMember(
+    @Param('teamId') teamId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    const member = await this.teamsService.getTeamMember(teamId, memberId);
+    return {
+      message: 'Member have been retrieved successfully.',
+      data: {
+        member,
+      },
+    };
+  }
+
+  @Delete(':teamId/members/:memberId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeMemberFromTeam(
+    @Param('teamId') teamId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    await this.teamsService.removeMember(teamId, memberId);
+  }
+
+  @Patch(':teamId/members/:memberId/activate')
+  @HttpCode(HttpStatus.OK)
+  async activateMember(
+    @Param('teamId') teamId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    await this.teamsService.activateMember(teamId, memberId);
+    return {
+      message: 'Member have been activated successfully.',
+    };
+  }
+
+  @Patch(':teamId/members/:memberId/deactivate')
+  @HttpCode(HttpStatus.OK)
+  async deactivateMember(
+    @Param('teamId') teamId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    await this.teamsService.deactivateMember(teamId, memberId);
+    return {
+      message: 'Member have been deactivated successfully.',
     };
   }
 }
